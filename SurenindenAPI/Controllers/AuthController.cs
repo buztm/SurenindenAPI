@@ -53,11 +53,27 @@ public class AuthController : ControllerBase
                 token = token,
                 expiration = DateTime.Now.AddDays(1),
                 userName = user.UserName,
+                userId = user.Id,
                 roles = roles
             });
         }
 
         return Unauthorized("Kullanıcı adı veya şifre hatalı!");
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpGet("users")]
+    public async Task<IActionResult> GetUsers()
+    {
+        var users = _userManager.Users.ToList();
+        var result = new List<object>();
+        foreach (var user in users)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+            result.Add(new { id = user.Id, userName = user.UserName, email = user.Email, roles = roles });
+        }
+
+        return Ok(result);
     }
 
     [Authorize(Roles = "Admin")]
@@ -73,30 +89,48 @@ public class AuthController : ControllerBase
         return BadRequest(result.Errors);
     }
 
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     [HttpPut("user/{id}")]
-    public async Task<IActionResult> UpdateUser(string id, RegisterDTO model)
+    public async Task<IActionResult> UpdateUser(string id, [FromBody] UserUpdateDTO dto)
     {
         var user = await _userManager.FindByIdAsync(id);
-        if (user == null) return NotFound("Kullanıcı bulunamadı.");
+        if (user == null)
+        {
+            return NotFound(new { message = "Kullanıcı bulunamadı." });
+        }
 
-        user.UserName = model.UserName;
-        user.Email = model.Email;
+        user.UserName = dto.UserName;
+        user.Email = dto.Email;
 
-        var result = await _userManager.UpdateAsync(user);
-        if (result.Succeeded) return Ok("Kullanıcı bilgileri güncellendi.");
+        var updateResult = await _userManager.UpdateAsync(user);
 
-        return BadRequest(result.Errors);
+        if (!updateResult.Succeeded)
+        {
+            return BadRequest(new { errors = updateResult.Errors });
+        }
+
+        if (!string.IsNullOrEmpty(dto.Password))
+        {
+            var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var passwordResult = await _userManager.ResetPasswordAsync(user, resetToken, dto.Password);
+
+            if (!passwordResult.Succeeded)
+            {
+                return BadRequest(new { errors = passwordResult.Errors });
+            }
+        }
+
+        return Ok(new { message = "Profil başarıyla güncellendi." });
     }
 
     private string GenerateJwtToken(AppUser user, IList<string> roles)
     {
         var claims = new List<Claim>
-    {
-        new Claim(ClaimTypes.Name, user.UserName),
-        new Claim(ClaimTypes.NameIdentifier, user.Id),
-        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-    };
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.Id),
+            new Claim(ClaimTypes.Name, user.UserName),
+            new Claim(ClaimTypes.Email, user.Email ?? "")
+        };
 
         foreach (var role in roles)
         {

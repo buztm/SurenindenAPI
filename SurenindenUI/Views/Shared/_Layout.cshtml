@@ -1,49 +1,182 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - SurenindenUI</title>
-    <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>@ViewData["Title"] - Sureninden</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/sbadmin/vendor/fontawesome-free/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/SurenindenUI.styles.css" asp-append-version="true" />
+
+    <style>
+        :root {
+            --brand-yellow: #FFD700;
+            --brand-dark: #1A1A1A;
+            --brand-light: #f4f7f6;
+        }
+
+        /* Sayfayı Flexbox yaparak Footer'ı aşağı itme */
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--brand-light);
+            color: var(--brand-dark);
+            display: flex;
+            flex-direction: column; /* İçeriği dikey sırala */
+        }
+
+        header {
+            flex-shrink: 0; /* Header'ın küçülmesini engelle */
+        }
+
+        /* Ana içerik alanı boşluğu doldurur ve footer'ı aşağı iter */
+        main {
+            flex: 1 0 auto;
+            padding-top: 2rem;
+        }
+
+        .navbar {
+            background: rgba(26, 26, 26, 0.95) !important;
+            backdrop-filter: blur(10px);
+            padding: 0.8rem 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            color: var(--brand-yellow) !important;
+            font-size: 1.6rem;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+        }
+
+        .brand-icon-circle {
+            width: 40px;
+            height: 40px;
+            background: var(--brand-yellow);
+            color: var(--brand-dark);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            transform: rotate(-10deg);
+        }
+
+        /* Footer Sabitleme Ayarları */
+        .footer {
+            flex-shrink: 0; /* Footer'ın ezilmesini engelle */
+            background: var(--brand-dark);
+            color: white;
+            padding: 3rem 0 0 0; /* Alt bar için padding'i sıfırladık */
+            border-top: 4px solid var(--brand-yellow);
+        }
+
+            .footer h5 {
+                color: var(--brand-yellow);
+                font-weight: 800;
+                letter-spacing: 1px;
+            }
+
+        .footer-link {
+            color: rgba(255,255,255,0.6);
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+            .footer-link:hover {
+                color: var(--brand-yellow);
+                padding-left: 5px;
+            }
+
+        .copyright-bar {
+            background: #111;
+            padding: 1.5rem 0;
+            margin-top: 3rem;
+            font-size: 0.85rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+    </style>
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">SurenindenUI</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+        <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+            <div class="container">
+                <a class="navbar-brand" href="/">
+                    <div class="brand-icon-circle shadow-sm">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    SURENİNDEN
+                </a>
+
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link" href="/"><i class="fas fa-home"></i> Ana Sayfa</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link" href="/home/cars"><i class="fas fa-search"></i> Araç Bul</a>
                         </li>
+                    </ul>
+
+                    <ul id="userNav" class="navbar-nav ms-auto align-items-center">
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
-    <footer class="border-top footer text-muted">
+    <main role="main">
         <div class="container">
-            &copy; 2026 - SurenindenUI - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            @RenderBody()
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="row g-4 text-center text-md-start">
+                <div class="col-md-4">
+                    <h5 class="mb-3">SURENİNDEN</h5>
+                    <p class="text-white-50 small">Hayalinizdeki aracı en hızlı ve güvenilir şekilde kiralamanız için buradayız. Premium araç filomuzla hizmetinizdeyiz.</p>
+                </div>
+                <div class="col-md-4 text-md-center">
+                    <h5 class="mb-3">Hızlı Linkler</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/" class="footer-link small mb-2 d-block">Ana Sayfa</a></li>
+                        <li><a href="/home/cars" class="footer-link small mb-2 d-block">Araç Listesi</a></li>
+                        <li><a href="/auth/login" class="footer-link small mb-2 d-block">Giriş Yap</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <h5 class="mb-3">İletişim</h5>
+                    <p class="text-white-50 small mb-1"><i class="fas fa-envelope text-warning me-2"></i> info@sureninden.com</p>
+                    <p class="text-white-50 small"><i class="fas fa-phone text-warning me-2"></i> +90 555 000 00 00</p>
+                </div>
+            </div>
+
+            <div class="copyright-bar text-center">
+                <div class="container text-white-50">
+                    &copy; @DateTime.Now.Year Sureninden. Premium Araç Kiralama Portalı. Tüm Hakları Saklıdır.
+                </div>
+            </div>
         </div>
     </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="~/sbadmin/vendor/jquery/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/api-service.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

@@ -1,0 +1,404 @@
+﻿@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Kullanıcı Yönetimi";
+}
+
+<style>
+    .premium-table thead th {
+        background-color: #f8f9fa;
+        border: none;
+        color: #1A1A1A;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        padding: 1.25rem;
+    }
+
+    .premium-table tbody td {
+        vertical-align: middle;
+        padding: 1.25rem;
+        border-color: #f1f3f9;
+    }
+
+    .user-avatar-circle {
+        width: 40px;
+        height: 40px;
+        background: #f1f3f9;
+        color: #1A1A1A;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.2rem;
+    }
+
+    .id-badge {
+        background: #f8f9fc;
+        color: #6e707e;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: 1px solid #eaecf4;
+        font-family: monospace;
+    }
+
+        .id-badge:hover {
+            background: #FFD700;
+            color: #1A1A1A;
+            border-color: #FFD700;
+        }
+
+    .role-badge {
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+    }
+
+    .action-btn {
+        width: 35px;
+        height: 35px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        margin: 0 3px;
+    }
+
+    .btn-add-user {
+        background-color: #FFD700;
+        color: #1A1A1A;
+        font-weight: 700;
+        border: none;
+        border-radius: 12px;
+        padding: 10px 20px;
+    }
+
+        .btn-add-user:hover {
+            background-color: #1A1A1A;
+            color: #FFD700;
+            transform: translateY(-2px);
+        }
+
+    .search-wrapper {
+        position: relative;
+        width: 300px;
+    }
+
+        .search-wrapper i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #A0A0A0;
+        }
+
+    .search-input {
+        padding-left: 40px !important;
+        border-radius: 12px !important;
+        border: 2px solid #f1f3f9 !important;
+        height: 45px !important;
+    }
+
+        .search-input:focus {
+            border-color: #FFD700 !important;
+            box-shadow: none !important;
+        }
+</style>
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800 font-weight-bold">Kullanıcılar</h1>
+    <div class="d-flex align-items-center">
+        <div class="search-wrapper mr-3">
+            <i class="fas fa-search"></i>
+            <input type="text" id="userSearchInput" class="form-control search-input bg-white" placeholder="ID, İsim veya E-posta..." onkeyup="filterUsers()">
+        </div>
+        <button class="btn btn-add-user shadow-sm" data-toggle="modal" data-target="#userModal" onclick="resetUserForm()">
+            <i class="fas fa-user-plus mr-2"></i> Yeni Kullanıcı
+        </button>
+    </div>
+</div>
+
+<div id="pageAlert"></div>
+
+<div class="card border-0 shadow-sm" style="border-radius: 20px;">
+    <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center mt-2">
+        <h6 class="m-0 font-weight-bold text-dark"><i class="fas fa-users mr-2 text-warning"></i> Üye Listesi</h6>
+        <span id="userCountBadge" class="badge badge-dark px-3 py-2" style="border-radius: 8px;">Yükleniyor...</span>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table premium-table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th class="text-center">Profil</th>
+                        <th>Kullanıcı Bilgileri</th>
+                        <th class="text-center">Kısa ID</th>
+                        <th class="text-center">Roller</th>
+                        <th class="text-center">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody id="usersList">
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-5">
+                            <i class="fas fa-spinner fa-spin fa-2x mb-3 d-block text-warning"></i>
+                            Veriler yükleniyor...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-header border-0 bg-dark text-white p-4" style="border-radius: 20px 20px 0 0;">
+                <h5 class="modal-title fw-bold" id="userModalTitle"><i class="fas fa-user-plus mr-2 text-warning"></i> Kullanıcı Formu</h5>
+                <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="userForm">
+                    <input type="hidden" id="userId" />
+                    <div class="form-group mb-3">
+                        <label class="font-weight-bold small text-uppercase">Kullanıcı Adı</label>
+                        <input type="text" class="form-control form-control-lg bg-light border-0" id="userName" required style="font-size: 0.9rem; border-radius: 12px;">
+                    </div>
+                    <div class="form-group mb-4">
+                        <label class="font-weight-bold small text-uppercase">E-Posta Adresi</label>
+                        <input type="email" class="form-control form-control-lg bg-light border-0" id="userEmail" required style="font-size: 0.9rem; border-radius: 12px;">
+                    </div>
+                    <div class="p-3 mb-4" style="background: #f8f9fc; border-radius: 15px; border: 1px dashed #dee2e6;">
+                        <h6 class="font-weight-bold text-dark mb-3 small"><i class="fas fa-lock mr-2 text-warning"></i> GÜVENLİK AYARLARI</h6>
+                        <div class="form-group">
+                            <label class="font-weight-bold small text-muted">Şifre <span id="passwordRequiredStar" class="text-danger">*</span></label>
+                            <input type="password" class="form-control border-0 shadow-sm" id="userPassword" style="border-radius: 10px;">
+                        </div>
+                        <div class="form-group mb-0">
+                            <label class="font-weight-bold small text-muted">Şifre Tekrar <span id="confirmPasswordRequiredStar" class="text-danger">*</span></label>
+                            <input type="password" class="form-control border-0 shadow-sm" id="userConfirmPassword" style="border-radius: 10px;">
+                        </div>
+                        <small class="text-muted d-block mt-2" id="passwordHelpText"></small>
+                    </div>
+                    <div id="userFormAlert"></div>
+                </form>
+            </div>
+            <div class="modal-footer border-0 p-4">
+                <button type="button" class="btn btn-light px-4" data-dismiss="modal" style="border-radius: 12px;">Vazgeç</button>
+                <button type="button" class="btn btn-warning px-5 font-weight-bold" id="saveUserBtn" onclick="saveUser()" style="border-radius: 12px; color: #1A1A1A;">Kaydet</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-body text-center p-5">
+                <i class="fas fa-user-minus text-danger fa-4x mb-4 opacity-25"></i>
+                <h4 class="font-weight-bold text-dark">Kullanıcıyı Sil?</h4>
+                <p class="text-muted">Bu kullanıcıyı silmek kiralama geçmişinde tutarsızlığa neden olabilir. Devam etmek istiyor musunuz?</p>
+                <input type="hidden" id="deleteUserId" />
+                <div class="mt-4">
+                    <button type="button" class="btn btn-light px-4 mr-2" data-dismiss="modal" style="border-radius: 12px;">İptal</button>
+                    <button type="button" class="btn btn-danger px-4 shadow-sm" id="executeDeleteBtn" onclick="executeDelete()" style="border-radius: 12px;">Evet, Sil</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let isSaving = false;
+        let allUsersData = [];
+
+        $(document).ready(function() {
+            loadUsers();
+        });
+
+        function isActuallySuccess(error) {
+            if (!error) return false;
+            if (error instanceof SyntaxError || (error.message && error.message.toLowerCase().includes('json'))) return true;
+            if (error.status && error.status >= 200 && error.status < 300) return true;
+            if (error.response && error.response.status >= 200 && error.response.status < 300) return true;
+            return false;
+        }
+
+        function loadUsers() {
+            ApiService.auth.getUsers()
+                .then(data => {
+                    allUsersData = data || [];
+                    renderUserTable(allUsersData);
+                })
+                .catch(() => {
+                    $('#usersList').html('<tr><td colspan="5" class="text-center text-danger py-5">Veriler yüklenemedi!</td></tr>');
+                });
+        }
+
+        function renderUserTable(data) {
+            let html = '';
+            if (!data || data.length === 0) {
+                html = '<tr><td colspan="5" class="text-center text-muted py-5">Kullanıcı bulunamadı.</td></tr>';
+            } else {
+                data.forEach(user => {
+                    const roles = user.roles && user.roles.length > 0 ? user.roles.join(', ') : 'Üye';
+                    const initial = user.userName.charAt(0).toUpperCase();
+                    const shortId = user.id.substring(0, 8);
+
+                    html += `<tr>
+                        <td class="text-center">
+                            <div class="user-avatar-circle mx-auto">${initial}</div>
+                        </td>
+                        <td>
+                            <div class="font-weight-bold text-dark">${user.userName}</div>
+                            <small class="text-muted">${user.email}</small>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge id-badge px-2 py-1" onclick="copyId('${user.id}')" title="Tıkla ve ID Kopyala">${shortId}</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="role-badge ${roles.includes('Admin') ? 'bg-dark text-warning' : 'bg-light text-primary'}">${roles}</span>
+                        </td>
+                        <td class="text-center">
+                            <button class="btn btn-info action-btn shadow-sm" onclick="editUser('${user.id}', '${user.userName}', '${user.email}')" title="Düzenle">
+                                <i class="fas fa-pen fa-xs"></i>
+                            </button>
+                            <button class="btn btn-danger action-btn shadow-sm" onclick="promptDelete('${user.id}')" title="Sil">
+                                <i class="fas fa-trash fa-xs"></i>
+                            </button>
+                        </td>
+                    </tr>`;
+                });
+            }
+            $('#usersList').html(html);
+            $('#userCountBadge').text(data.length + ' Toplam Kayıt');
+        }
+
+        function filterUsers() {
+            const val = $('#userSearchInput').val().toLowerCase().trim();
+            const filtered = allUsersData.filter(u =>
+                (u.id && u.id.toLowerCase().includes(val)) ||
+                (u.userName && u.userName.toLowerCase().includes(val)) ||
+                (u.email && u.email.toLowerCase().includes(val))
+            );
+            renderUserTable(filtered);
+        }
+
+        function copyId(fullId) {
+            navigator.clipboard.writeText(fullId).then(() => {
+                showPageAlert('ID Panoya Kopyalandı!', 'info');
+            });
+        }
+
+        function resetUserForm() {
+            $('#userForm')[0].reset();
+            $('#userId').val('');
+            $('#userFormAlert').html('');
+            $('#userModalTitle').html('<i class="fas fa-user-plus mr-2 text-warning"></i> Yeni Kullanıcı');
+            $('#passwordRequiredStar').show();
+            $('#confirmPasswordRequiredStar').show();
+            $('#passwordHelpText').text('Sistem güvenliği için şifre belirleyin.');
+            isSaving = false;
+        }
+
+        function editUser(id, userName, email) {
+            resetUserForm();
+            $('#userId').val(id);
+            $('#userName').val(userName);
+            $('#userEmail').val(email);
+            $('#userModalTitle').html('<i class="fas fa-user-edit mr-2 text-warning"></i> Profili Güncelle');
+            $('#passwordRequiredStar').hide();
+            $('#confirmPasswordRequiredStar').hide();
+            $('#passwordHelpText').text('Değiştirmek istemiyorsanız şifre alanlarını boş bırakın.');
+            $('#userModal').modal('show');
+        }
+
+        function saveUser() {
+            if (isSaving) return;
+            const userId = $('#userId').val();
+            const userName = $('#userName').val();
+            const userEmail = $('#userEmail').val();
+            const userPassword = $('#userPassword').val();
+            const userConfirmPassword = $('#userConfirmPassword').val();
+
+            if (!userName || !userEmail) {
+                showFormAlert('Ad ve E-posta zorunludur!', 'warning');
+                return;
+            }
+
+            if (!userId && !userPassword) {
+                showFormAlert('Şifre belirlemek zorunludur!', 'warning');
+                return;
+            }
+
+            if (userPassword && userPassword !== userConfirmPassword) {
+                showFormAlert('Şifreler uyuşmuyor!', 'warning');
+                return;
+            }
+
+            isSaving = true;
+            $('#saveUserBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
+
+            const promise = userId
+                ? ApiService.auth.updateUser(userId, userName, userEmail, userPassword)
+                : ApiService.auth.register(userName, userEmail, userPassword);
+
+            promise.then(() => handleSuccessAction(userId ? 'Profil güncellendi!' : 'Kullanıcı oluşturuldu!'))
+                .catch(err => {
+                    if (isActuallySuccess(err)) handleSuccessAction('İşlem Başarılı!');
+                    else {
+                        showFormAlert('Hata: ' + (err.message || "Başarısız"), 'danger');
+                        isSaving = false;
+                        $('#saveUserBtn').prop('disabled', false).html('Kaydet');
+                    }
+                });
+        }
+
+        function promptDelete(id) {
+            $('#deleteUserId').val(id);
+            $('#deleteConfirmModal').modal('show');
+        }
+
+        function executeDelete() {
+            const id = $('#deleteUserId').val();
+            $('#executeDeleteBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
+            ApiService.auth.deleteUser(id)
+                .then(() => handleDeleteSuccess())
+                .catch(err => {
+                    if (isActuallySuccess(err)) handleDeleteSuccess();
+                    else showPageAlert('Silinemedi!', 'danger');
+                });
+        }
+
+        function handleSuccessAction(message) {
+            $('#userModal').modal('hide');
+            showPageAlert(message, 'success');
+            loadUsers();
+        }
+
+        function handleDeleteSuccess() {
+            $('#deleteConfirmModal').modal('hide');
+            showPageAlert('Kullanıcı silindi!', 'success');
+            loadUsers();
+        }
+
+        function showFormAlert(message, type) {
+            const alert = `<div class="alert alert-${type} border-0 small shadow-sm mt-3" style="border-radius:12px;"><i class="fas fa-info-circle mr-2"></i> ${message}</div>`;
+            $('#userFormAlert').html(alert);
+        }
+
+        function showPageAlert(message, type) {
+            const alert = `<div class="alert alert-${type} alert-dismissible fade show border-0 shadow-sm" style="border-radius:12px; position:fixed; top:20px; right:20px; z-index:9999;">
+                <i class="fas fa-check-circle mr-2"></i> ${message}
+                <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+            </div>`;
+            $('#pageAlert').html(alert);
+            setTimeout(() => $('#pageAlert .alert').alert('close'), 4000);
+        }
+    </script>
+}

@@ -1,0 +1,411 @@
+﻿@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Araç Yönetimi";
+}
+
+<style>
+    .premium-table thead th {
+        background-color: #f8f9fa;
+        border: none;
+        color: #1A1A1A;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        padding: 1.25rem;
+    }
+
+    .premium-table tbody td {
+        vertical-align: middle;
+        padding: 1.25rem;
+        border-color: #f1f3f9;
+        color: #495057;
+    }
+
+    .car-img-preview {
+        width: 80px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        transition: transform 0.2s;
+    }
+
+        .car-img-preview:hover {
+            transform: scale(1.1);
+        }
+
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.75rem;
+    }
+
+    .action-btn {
+        width: 35px;
+        height: 35px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        margin: 0 3px;
+        transition: all 0.2s;
+    }
+
+    .btn-add-new {
+        background-color: #FFD700;
+        color: #1A1A1A;
+        font-weight: 700;
+        border: none;
+        border-radius: 12px;
+        padding: 10px 20px;
+        transition: all 0.3s;
+    }
+
+        .btn-add-new:hover {
+            background-color: #1A1A1A;
+            color: #FFD700;
+            transform: translateY(-2px);
+        }
+</style>
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800 font-weight-bold">Araç Filosu</h1>
+    <button class="btn btn-add-new shadow-sm" data-toggle="modal" data-target="#carModal" onclick="resetCarForm()">
+        <i class="fas fa-plus mr-2"></i> Yeni Araç Ekle
+    </button>
+</div>
+
+<div id="pageAlert"></div>
+
+<div class="card border-0 shadow-sm" style="border-radius: 20px;">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table premium-table table-hover mb-0" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th class="text-center">ID</th>
+                        <th>Görsel</th>
+                        <th>Araç Bilgisi</th>
+                        <th>Plaka</th>
+                        <th>Günlük Fiyat</th>
+                        <th>Özellikler</th>
+                        <th class="text-center">Durum</th>
+                        <th class="text-center">Yönet</th>
+                    </tr>
+                </thead>
+                <tbody id="carsList">
+                    <tr>
+                        <td colspan="8" class="text-center text-muted py-5">
+                            <i class="fas fa-spinner fa-spin fa-2x mb-3 d-block text-warning"></i>
+                            Veriler yükleniyor...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="carModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-header border-0 bg-dark text-white p-4" style="border-radius: 20px 20px 0 0;">
+                <h5 class="modal-title fw-bold"><i class="fas fa-car mr-2 text-warning"></i> Araç Detay Formu</h5>
+                <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="carForm">
+                    <input type="hidden" id="carId" />
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="font-weight-bold small text-uppercase">Marka</label>
+                            <input type="text" class="form-control form-control-lg bg-light border-0" id="brand" required placeholder="Örn: BMW" style="font-size: 0.9rem; border-radius: 12px;">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="font-weight-bold small text-uppercase">Model</label>
+                            <input type="text" class="form-control form-control-lg bg-light border-0" id="model" required placeholder="Örn: 320i" style="font-size: 0.9rem; border-radius: 12px;">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="font-weight-bold small text-uppercase">Model Yılı</label>
+                            <input type="number" class="form-control form-control-lg bg-light border-0" id="year" required style="font-size: 0.9rem; border-radius: 12px;">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="font-weight-bold small text-uppercase">Plaka</label>
+                            <input type="text" class="form-control form-control-lg bg-light border-0" id="plate" required placeholder="34 ABC 123" style="font-size: 0.9rem; border-radius: 12px;">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="font-weight-bold small text-uppercase">Kategori</label>
+                            <select class="form-control form-control-lg bg-light border-0" id="categoryId" required style="font-size: 0.9rem; border-radius: 12px;"></select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="font-weight-bold small text-uppercase">Günlük Fiyat (₺)</label>
+                            <input type="number" class="form-control form-control-lg bg-light border-0 text-success fw-bold" id="dailyPrice" step="0.01" required style="font-size: 0.9rem; border-radius: 12px;">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="font-weight-bold small text-uppercase">Yakıt</label>
+                            <select class="form-control form-control-lg bg-light border-0" id="fuelType" style="font-size: 0.9rem; border-radius: 12px;">
+                                <option value="Benzin">Benzin</option>
+                                <option value="Dizel">Dizel</option>
+                                <option value="Elektrik">Elektrik</option>
+                                <option value="Hibrit">Hibrit</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="font-weight-bold small text-uppercase">Vites</label>
+                            <select class="form-control form-control-lg bg-light border-0" id="transmission" style="font-size: 0.9rem; border-radius: 12px;">
+                                <option value="Manuel">Manuel</option>
+                                <option value="Otomatik">Otomatik</option>
+                            </select>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label class="font-weight-bold small text-uppercase">Araç Görseli</label>
+                            <div class="custom-file mb-3">
+                                <input type="file" class="custom-file-input" id="imageFile" accept="image/*">
+                                <label class="custom-file-label border-0 bg-light" for="imageFile" style="border-radius: 12px;">Dosya Seç...</label>
+                            </div>
+                            <input type="hidden" id="imagePath" />
+                            <div class="text-center bg-light p-3 rounded-lg" style="min-height: 100px;">
+                                <img id="imagePreview" src="" class="img-fluid rounded shadow-sm" style="max-height:180px; display:none;">
+                                <div id="noImgPlaceholder" class="text-muted small py-4"><i class="fas fa-image fa-2x mb-2 d-block opacity-25"></i>Görsel Seçilmedi</div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="custom-control custom-switch custom-switch-lg py-2">
+                                <input type="checkbox" class="custom-control-input" id="isAvailable" checked>
+                                <label class="custom-control-label font-weight-bold text-dark" for="isAvailable">Araç hemen kiralanabilir</label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-0 p-4">
+                <button type="button" class="btn btn-light px-4" data-dismiss="modal" style="border-radius: 12px;">İptal</button>
+                <button type="button" class="btn btn-warning px-5 font-weight-bold" id="saveCarBtn" onclick="saveCar()" style="border-radius: 12px; color: #1A1A1A;">Kaydet</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content border-0" style="border-radius: 20px;">
+            <div class="modal-body text-center p-5">
+                <i class="fas fa-exclamation-circle text-danger fa-4x mb-4"></i>
+                <h4 class="font-weight-bold text-dark">Emin misiniz?</h4>
+                <p class="text-muted">Bu araç silindiğinde kiralama geçmişi haricinde sistemden tamamen kaldırılacaktır.</p>
+                <input type="hidden" id="deleteCarId" />
+                <div class="mt-4">
+                    <button type="button" class="btn btn-light px-4 mr-2" data-dismiss="modal" style="border-radius: 12px;">Vazgeç</button>
+                    <button type="button" class="btn btn-danger px-4 shadow-sm" id="executeDeleteBtn" onclick="executeDelete()" style="border-radius: 12px;">Evet, Sil</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let isSavingCar = false;
+
+        $(document).ready(function() {
+            loadCategories();
+            loadCars();
+
+            $('#imageFile').on('change', function() {
+                const fileName = $(this).val().split('\\').pop();
+                $(this).next('.custom-file-label').addClass("selected").html(fileName);
+                const file = this.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#noImgPlaceholder').hide();
+                    $('#imagePreview').attr('src', e.target.result).fadeIn();
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+
+        function loadCategories() {
+            ApiService.categories.getAll()
+                .then(data => {
+                    const select = $('#categoryId');
+                    select.html('<option value="">Seçin...</option>');
+                    data.forEach(cat => {
+                        select.append(`<option value="${cat.id}">${cat.name}</option>`);
+                    });
+                })
+                .catch(error => console.error(error));
+        }
+
+        function loadCars() {
+            ApiService.cars.getAll()
+                .then(data => {
+                    let html = '';
+                    if (!data || data.length === 0) {
+                        html = '<tr><td colspan="8" class="text-center text-muted py-5">Araç bulunamadı.</td></tr>';
+                    } else {
+                        data.forEach(car => {
+                            const status = car.isAvailable ?
+                                '<span class="status-badge bg-success-light text-success"><i class="fas fa-check-circle mr-1"></i> Müsait</span>' :
+                                '<span class="status-badge bg-danger-light text-danger"><i class="fas fa-clock mr-1"></i> Kirada</span>';
+
+                            const defaultImg = '/images/car-default.jpg';
+                            const fullImagePath = car.imagePath ? `https://localhost:7008${car.imagePath}` : defaultImg;
+
+                            html += `<tr>
+                                <td class="text-center font-weight-bold text-gray-400">#${car.id}</td>
+                                <td><img src="${fullImagePath}" class="car-img-preview" onerror="this.onerror=null;this.src='${defaultImg}';"></td>
+                                <td>
+                                    <div class="font-weight-bold text-dark">${car.brand} ${car.model}</div>
+                                    <small class="text-muted">${car.year} Model</small>
+                                </td>
+                                <td><span class="badge badge-light border text-dark px-3 py-2" style="border-radius: 8px;">${car.plate}</span></td>
+                                <td class="font-weight-bold text-dark">₺${car.dailyPrice.toLocaleString('tr-TR')}</td>
+                                <td class="small">
+                                    <i class="fas fa-gas-pump text-muted mr-1"></i> ${car.fuelType}<br>
+                                    <i class="fas fa-cog text-muted mr-1"></i> ${car.transmission}
+                                </td>
+                                <td class="text-center">${status}</td>
+                                <td class="text-center">
+                                    <button class="btn btn-info action-btn shadow-sm" onclick="editCar(${car.id})" data-toggle="modal" data-target="#carModal">
+                                        <i class="fas fa-pen fa-xs"></i>
+                                    </button>
+                                    <button class="btn btn-danger action-btn shadow-sm" onclick="promptDelete(${car.id})">
+                                        <i class="fas fa-trash fa-xs"></i>
+                                    </button>
+                                </td>
+                            </tr>`;
+                        });
+                    }
+                    $('#carsList').html(html);
+                })
+                .catch(error => {
+                    $('#carsList').html('<tr><td colspan="8" class="text-center text-danger py-5">Araçlar yüklenirken bir hata oluştu!</td></tr>');
+                });
+        }
+
+        function resetCarForm() {
+            $('#carForm')[0].reset();
+            $('#carId').val('');
+            $('#carFormAlert').html('');
+            $('#imagePreview').hide();
+            $('#noImgPlaceholder').show();
+            $('.custom-file-label').html('Dosya Seçin').removeClass('selected');
+            isSavingCar = false;
+        }
+
+        function editCar(id) {
+            resetCarForm();
+            ApiService.cars.getById(id)
+                .then(car => {
+                    $('#carId').val(car.id);
+                    $('#brand').val(car.brand);
+                    $('#model').val(car.model);
+                    $('#year').val(car.year);
+                    $('#plate').val(car.plate);
+                    $('#dailyPrice').val(car.dailyPrice);
+                    $('#categoryId').val(car.categoryId);
+                    $('#fuelType').val(car.fuelType || 'Benzin');
+                    $('#transmission').val(car.transmission || 'Otomatik');
+                    $('#imagePath').val(car.imagePath);
+                    if (car.imagePath) {
+                        $('#imagePreview').attr('src', `https://localhost:7008${car.imagePath}`).show();
+                        $('#noImgPlaceholder').hide();
+                    }
+                    $('#isAvailable').prop('checked', car.isAvailable);
+                });
+        }
+
+        function saveCar() {
+            if (isSavingCar) return;
+            const carId = $('#carId').val();
+            const fileInput = $('#imageFile')[0];
+            const hasFile = fileInput && fileInput.files && fileInput.files.length > 0;
+
+            const carData = {
+                id: carId ? parseInt(carId) : 0,
+                brand: $('#brand').val(),
+                model: $('#model').val(),
+                year: parseInt($('#year').val()),
+                plate: $('#plate').val(),
+                dailyPrice: parseFloat($('#dailyPrice').val()),
+                categoryId: parseInt($('#categoryId').val()),
+                fuelType: $('#fuelType').val(),
+                transmission: $('#transmission').val(),
+                imagePath: $('#imagePath').val() || "/images/car-default.jpg",
+                isAvailable: $('#isAvailable').is(':checked')
+            };
+
+            if (!carData.brand || !carData.model || !carData.dailyPrice) {
+                showFormAlert('Lütfen gerekli alanları doldurun!', 'warning');
+                return;
+            }
+
+            isSavingCar = true;
+            $('#saveCarBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
+
+            const performSave = (finalImagePath) => {
+                if (finalImagePath) carData.imagePath = finalImagePath;
+                const promise = carId ? ApiService.cars.update(carId, carData) : ApiService.cars.create(carData);
+
+                promise.then(() => handleSuccessAction('Araç kaydedildi!', '#carModal'))
+                       .catch(err => {
+                           if (err.status === 200) handleSuccessAction('Araç kaydedildi!', '#carModal');
+                           else showFormAlert('Hata: ' + (err.message || ""), 'danger');
+                       })
+                       .finally(() => {
+                           isSavingCar = false;
+                           $('#saveCarBtn').prop('disabled', false).html('Kaydet');
+                       });
+            };
+
+            if (hasFile) {
+                ApiService.cars.uploadImage(fileInput.files[0])
+                    .then(res => performSave(res.path || res))
+                    .catch(() => {
+                        showFormAlert('Resim yüklenemedi!', 'danger');
+                        isSavingCar = false;
+                        $('#saveCarBtn').prop('disabled', false).html('Kaydet');
+                    });
+            } else {
+                performSave(carData.imagePath);
+            }
+        }
+
+        function promptDelete(id) {
+            $('#deleteCarId').val(id);
+            $('#deleteConfirmModal').modal('show');
+        }
+
+        function executeDelete() {
+            const id = $('#deleteCarId').val();
+            $('#executeDeleteBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
+            ApiService.cars.delete(id)
+                .then(() => handleSuccessAction('Araç silindi!', '#deleteConfirmModal'))
+                .catch(() => handleSuccessAction('Araç silindi!', '#deleteConfirmModal'));
+        }
+
+        function handleSuccessAction(message, modalId) {
+            $(modalId).modal('hide');
+            showPageAlert(message, 'success');
+            loadCars();
+        }
+
+        function showFormAlert(message, type) {
+            const alert = `<div class="alert alert-${type} border-0 small shadow-sm" style="border-radius:12px;"><i class="fas fa-info-circle mr-2"></i> ${message}</div>`;
+            $('#carFormAlert').html(alert);
+        }
+
+        function showPageAlert(message, type) {
+            const alert = `<div class="alert alert-${type} alert-dismissible fade show border-0 shadow-sm" style="border-radius:12px; position:fixed; top:20px; right:20px; z-index:9999;">
+                <i class="fas fa-check-circle mr-2"></i> ${message}
+                <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+            </div>`;
+            $('#pageAlert').html(alert);
+            setTimeout(() => $('#pageAlert .alert').alert('close'), 4000);
+        }
+    </script>
+}

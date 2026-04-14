@@ -1,0 +1,322 @@
+﻿@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Yönetim Paneli";
+}
+
+<style>
+    :root {
+        --brand-yellow: #FFD700;
+        --brand-dark: #1A1A1A;
+    }
+
+    .stat-card {
+        border: none;
+        border-radius: 15px;
+        transition: all 0.3s ease;
+        background: #fff;
+        overflow: hidden;
+        position: relative;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            opacity: 0.8;
+        }
+
+    .border-left-info.stat-card::after {
+        background: #36b9cc;
+    }
+
+    .border-left-success.stat-card::after {
+        background: #1cc88a;
+    }
+
+    .border-left-warning.stat-card::after {
+        background: #f6c23e;
+    }
+
+    .border-left-primary.stat-card::after {
+        background: #4e73df;
+    }
+
+    .stat-icon-bg {
+        position: absolute;
+        right: -10px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 5rem;
+        opacity: 0.05;
+        color: var(--brand-dark);
+    }
+
+    .premium-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+
+        .premium-card .card-header {
+            background-color: transparent;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding: 1.25rem;
+        }
+
+    .list-group-item {
+        border-left: none;
+        border-right: none;
+        padding: 1rem 1.25rem;
+        transition: all 0.2s;
+    }
+
+        .list-group-item:hover {
+            background-color: #f8f9fc;
+            padding-left: 1.5rem;
+        }
+
+    .recent-table th {
+        background: #f8f9fc;
+        border: none;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 1px;
+    }
+</style>
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800 font-weight-bold">Dashboard</h1>
+</div>
+
+<div id="adminContent" style="display: none;">
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card stat-card border-left-info shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Aktif Kiralamalar</div>
+                            <div class="h3 mb-0 font-weight-bold text-gray-800" id="activeRentals">0</div>
+                        </div>
+                        <div class="col-auto"><i class="fas fa-clock fa-2x text-gray-300"></i></div>
+                    </div>
+                </div>
+                <i class="fas fa-clock stat-icon-bg"></i>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card stat-card border-left-success shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Müsait Araçlar</div>
+                            <div class="h3 mb-0 font-weight-bold text-gray-800" id="availableCars">0</div>
+                        </div>
+                        <div class="col-auto"><i class="fas fa-car fa-2x text-gray-300"></i></div>
+                    </div>
+                </div>
+                <i class="fas fa-car stat-icon-bg"></i>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card stat-card border-left-warning shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Toplam Kullanıcı</div>
+                            <div class="h3 mb-0 font-weight-bold text-gray-800" id="totalUsers">0</div>
+                        </div>
+                        <div class="col-auto"><i class="fas fa-users fa-2x text-gray-300"></i></div>
+                    </div>
+                </div>
+                <i class="fas fa-users stat-icon-bg"></i>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card stat-card border-left-primary shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Toplam Gelir</div>
+                            <div class="h3 mb-0 font-weight-bold text-gray-800" id="totalRevenue">₺0</div>
+                        </div>
+                        <div class="col-auto"><i class="fas fa-lira-sign fa-2x text-gray-300"></i></div>
+                    </div>
+                </div>
+                <i class="fas fa-coins stat-icon-bg"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-8 col-lg-7 mb-4">
+            <div class="card premium-card shadow-sm h-100">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-dark"><i class="fas fa-chart-area mr-2 text-primary"></i> Gelir Analizi</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area" style="height: 320px;">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-lg-5 mb-4">
+            <div class="card premium-card shadow-sm h-100">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-dark"><i class="fas fa-layer-group mr-2 text-primary"></i> Hızlı Erişim</h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        <a href="/admin/cars" class="list-group-item list-group-item-action"><i class="fas fa-car-side text-primary mr-3"></i> Araç Filosu</a>
+                        <a href="/admin/categories" class="list-group-item list-group-item-action"><i class="fas fa-tags text-success mr-3"></i> Kategoriler</a>
+                        <a href="/admin/users" class="list-group-item list-group-item-action"><i class="fas fa-users-cog text-info mr-3"></i> Kullanıcılar</a>
+                        <a href="/admin/rentals" class="list-group-item list-group-item-action"><i class="fas fa-file-invoice-dollar text-warning mr-3"></i> Kiralama Kayıtları</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card premium-card shadow-sm mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-dark"><i class="fas fa-history mr-2 text-primary"></i> Son İşlemler</h6>
+                    <a href="/admin/rentals" class="btn btn-sm btn-outline-primary rounded-pill px-3">Tümünü Gör</a>
+                </div>
+                <div class="card-body p-0">
+                    <div id="recentRentals" class="table-responsive">
+                        <p class="text-center text-muted my-5"><i class="fas fa-spinner fa-spin mr-2"></i>Veriler getiriliyor...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="accessDenied" style="display: none;" class="text-center py-5">
+    <div class="alert alert-danger d-inline-block px-5 py-4 shadow-sm" style="border-radius: 20px;">
+        <i class="fas fa-exclamation-triangle fa-3x mb-3"></i>
+        <h4 class="font-weight-bold">Erişim Engellendi</h4>
+        <p class="mb-0">Bu sayfayı görüntülemek için yönetici yetkisine sahip olmanız gerekmektedir.</p>
+        <a href="/" class="btn btn-danger mt-3 rounded-pill px-4">Anasayfaya Dön</a>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        $(document).ready(function() {
+            checkAdminAccess();
+        });
+
+        function getCurrentUser() {
+            const userStr = localStorage.getItem('authUser');
+            return userStr ? JSON.parse(userStr) : null;
+        }
+
+        function checkAdminAccess() {
+            const token = ApiService.getToken();
+            const user = getCurrentUser();
+
+            if (!token || !user) {
+                window.location.href = '/auth/login';
+                return;
+            }
+
+            const roles = user.roles || [];
+            const isAdmin = roles.some(r => r && r.toLowerCase() === 'admin');
+
+            if (!isAdmin) {
+                $('#adminContent').hide();
+                $('#accessDenied').show();
+                return;
+            }
+
+            $('#accessDenied').hide();
+            $('#adminContent').fadeIn(600);
+
+            loadDashboardStats();
+            loadMonthlyRevenue();
+            loadRecentRentals();
+        }
+
+        function loadDashboardStats() {
+            ApiService.dashboard.getStats()
+                .then(data => {
+                    $('#activeRentals').text(data.activeRentals);
+                    $('#availableCars').text(data.availableCars);
+                    $('#totalUsers').text(data.totalUsers);
+                    $('#totalRevenue').text('₺' + data.totalRevenue.toLocaleString('tr-TR'));
+                })
+                .catch(err => console.error('İstatistik hatası:', err));
+        }
+
+        function loadMonthlyRevenue() {
+            ApiService.dashboard.getMonthlyRevenue()
+                .then(data => {
+                    const ctx = document.getElementById('revenueChart');
+                    if (!ctx) return;
+
+                    new Chart(ctx.getContext('2d'), {
+                        type: 'line',
+                        data: {
+                            labels: ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'],
+                            datasets: [{
+                                label: 'Gelir (₺)',
+                                data: data.map(d => d.revenue),
+                                borderColor: '#4e73df',
+                                backgroundColor: 'rgba(78, 115, 223, 0.05)',
+                                fill: true,
+                                tension: 0.4,
+                                pointRadius: 4,
+                                pointBackgroundColor: '#4e73df'
+                            }]
+                        },
+                        options: {
+                            maintainAspectRatio: false,
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                y: { beginAtZero: true, grid: { drawBorder: false } },
+                                x: { grid: { display: false } }
+                            }
+                        }
+                    });
+                });
+        }
+
+        function loadRecentRentals() {
+            ApiService.dashboard.getRecentRentals()
+                .then(data => {
+                    if (!data || data.length === 0) {
+                        $('#recentRentals').html('<p class="text-center text-muted my-5">Henüz kiralama işlemi yapılmamış.</p>');
+                        return;
+                    }
+                    let html = '<table class="table recent-table mb-0"><thead><tr><th class="pl-4">ARAÇ</th><th>MÜŞTERİ ID</th><th>TARİH</th><th class="pr-4 text-right">TUTAR</th></tr></thead><tbody>';
+                    data.slice(0, 7).forEach(rental => {
+                        html += `<tr>
+                            <td class="pl-4 font-weight-bold text-dark">#${rental.carId} Araç</td>
+                            <td class="text-muted small">${rental.appUserId.substring(0, 12)}...</td>
+                            <td>${new Date(rental.rentDate).toLocaleDateString('tr-TR')}</td>
+                            <td class="pr-4 text-right font-weight-bold text-success">₺${rental.totalPrice.toLocaleString('tr-TR')}</td>
+                        </tr>`;
+                    });
+                    html += '</tbody></table>';
+                    $('#recentRentals').html(html);
+                });
+        }
+    </script>
+}

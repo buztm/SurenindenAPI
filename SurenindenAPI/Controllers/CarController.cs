@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SurenindenAPI.DTOs;
 using SurenindenAPI.Models;
 using SurenindenAPI.Repositories;
+using System.IO;
 
 namespace SurenindenAPI.Controllers
 {
@@ -22,6 +23,43 @@ namespace SurenindenAPI.Controllers
         {
             var cars = await _repository.GetAllAsync();
             return Ok(cars);
+        }
+
+        [HttpGet("available")]
+        public async Task<IActionResult> GetAvailable()
+        {
+            var cars = await _repository.GetAllAsync();
+            var availableCars = cars.Where(c => c.IsAvailable).ToList();
+            return Ok(availableCars);
+        }
+
+        [HttpGet("filter")]
+        public async Task<IActionResult> Filter(
+    [FromQuery] decimal? minPrice,
+    [FromQuery] decimal? maxPrice,
+    [FromQuery] string? fuelType,
+    [FromQuery] string? transmission,
+    [FromQuery] int? categoryId)
+        {
+            var cars = await _repository.GetAllAsync();
+            var filtered = cars.Where(c => c.IsAvailable).AsQueryable();
+
+            if (minPrice.HasValue)
+                filtered = filtered.Where(c => c.DailyPrice >= minPrice.Value);
+
+            if (maxPrice.HasValue)
+                filtered = filtered.Where(c => c.DailyPrice <= maxPrice.Value);
+
+            if (!string.IsNullOrWhiteSpace(fuelType) && !fuelType.Equals("null", StringComparison.OrdinalIgnoreCase))
+                filtered = filtered.Where(c => c.FuelType.Equals(fuelType, StringComparison.OrdinalIgnoreCase));
+
+            if (!string.IsNullOrWhiteSpace(transmission) && !transmission.Equals("null", StringComparison.OrdinalIgnoreCase))
+                filtered = filtered.Where(c => c.Transmission.Equals(transmission, StringComparison.OrdinalIgnoreCase));
+
+            if (categoryId.HasValue && categoryId.Value > 0)
+                filtered = filtered.Where(c => c.CategoryId == categoryId.Value);
+
+            return Ok(filtered.ToList());
         }
 
         [HttpGet("{id}")]
@@ -46,13 +84,34 @@ namespace SurenindenAPI.Controllers
                 DailyPrice = model.DailyPrice,
                 FuelType = model.FuelType,
                 Transmission = model.Transmission,
-                ImagePath = model.ImagePath ?? "default.jpg",
+                ImagePath = model.ImagePath ?? "/images/car-default.jpg",
                 IsAvailable = model.IsAvailable
             };
 
             await _repository.AddAsync(car);
             await _repository.SaveAsync();
             return Ok("Araç başarıyla eklendi.");
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost("upload")]
+        public async Task<IActionResult> Upload([FromForm] IFormFile file)
+        {
+            if (file == null || file.Length == 0) return BadRequest("Dosya bulunamadı.");
+
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "cars");
+            if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+
+            var uniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            var relativePath = $"/images/cars/{uniqueFileName}";
+            return Ok(new { path = relativePath });
         }
 
         [Authorize(Roles = "Admin")]

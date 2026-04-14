@@ -1,0 +1,285 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>@ViewData["Title"] - Sureninden Admin</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="~/sbadmin/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="~/sbadmin/css/sb-admin-2.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true">
+
+    <style>
+        :root {
+            --brand-yellow: #FFD700;
+            --brand-dark: #1a1a1a;
+            --sidebar-width: 280px;
+            --transition-speed: 0.4s;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #wrapper {
+            display: flex;
+            flex: 1 0 auto;
+        }
+
+        #content-wrapper {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            min-height: 100%;
+            background-color: #f8f9fc;
+        }
+
+        #content {
+            flex: 1 0 auto;
+        }
+
+        #accordionSidebar {
+            background: var(--brand-dark) !important;
+            background-image: none !important;
+            border-right: 1px solid rgba(255,215,0,0.05);
+            transition: all 0.3s ease;
+            /* Sabitleme için eklenen kısım */
+            position: sticky;
+            top: 0;
+            height: 100vh; /* Ekran yüksekliği kadar olsun */
+            z-index: 1000;
+            overflow-y: auto; /* İçerik sidebar'dan uzunsa kendi içinde kayabilsin */
+        }
+
+        /* Scrollbar'ı (kaydırma çubuğu) sidebar içinde gizlemek veya güzelleştirmek istersen: */
+        #accordionSidebar::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        #accordionSidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .sidebar .nav-item .nav-link {
+            padding: 1rem;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+            .sidebar .nav-item .nav-link:hover {
+                background: rgba(255,255,255,0.03);
+                border-left: 3px solid var(--brand-yellow);
+            }
+
+        .sidebar .nav-item.active .nav-link {
+            background: rgba(255,215,0,0.05);
+            border-left: 3px solid var(--brand-yellow);
+        }
+
+        .sidebar-brand-text {
+            color: var(--brand-yellow);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Topbar (Navbar) Premium Tasarım */
+        .topbar {
+            background: var(--brand-dark) !important;
+            height: 4.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2) !important;
+        }
+
+        .btn-view-site {
+            background: rgba(255,215,0,0.1);
+            color: var(--brand-yellow) !important;
+            font-weight: 700;
+            border: 1px solid var(--brand-yellow);
+            border-radius: 12px;
+            padding: 0.5rem 1.2rem;
+            transition: all 0.3s;
+        }
+
+            .btn-view-site:hover {
+                background: var(--brand-yellow);
+                color: var(--brand-dark) !important;
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+            }
+
+        /* Profil Badge Modernizasyonu */
+        .admin-profile-badge {
+            background: rgba(255, 255, 255, 0.03) !important;
+            backdrop-filter: blur(15px);
+            padding: 8px 18px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+        }
+
+            .admin-profile-badge:hover {
+                background: rgba(255, 255, 255, 0.08) !important;
+                border-color: var(--brand-yellow);
+            }
+
+        .user-icon-circle {
+            width: 35px;
+            height: 35px;
+            background: var(--brand-yellow);
+            color: var(--brand-dark);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 12px;
+            box-shadow: 0 4px 10px rgba(255, 215, 0, 0.2);
+        }
+
+        /* Footer */
+        .sticky-footer {
+            flex-shrink: 0;
+            background: transparent;
+            padding: 2rem 0;
+        }
+    </style>
+</head>
+
+<body id="page-top">
+    <div id="wrapper">
+
+        <ul class="navbar-nav sidebar sidebar-dark accordion shadow" id="accordionSidebar">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center my-4" href="/admin/dashboard">
+                <div class="sidebar-brand-icon rotate-n-15">
+                    <i class="fas fa-car-side text-warning fa-2x"></i>
+                </div>
+                <div class="sidebar-brand-text mx-3">Sureninden</div>
+            </a>
+
+            <hr class="sidebar-divider my-0">
+
+            <li class="nav-item mt-3">
+                <a class="nav-link" href="/admin/dashboard">
+                    <i class="fas fa-fw fa-layer-group"></i>
+                    <span>Genel Bakış</span>
+                </a>
+            </li>
+
+            <hr class="sidebar-divider">
+            <div class="sidebar-heading opacity-50 small">FİLO YÖNETİMİ</div>
+
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/cars">
+                    <i class="fas fa-fw fa-car"></i>
+                    <span>Araçlar</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/categories">
+                    <i class="fas fa-fw fa-tags"></i>
+                    <span>Kategoriler</span>
+                </a>
+            </li>
+
+            <hr class="sidebar-divider">
+            <div class="sidebar-heading opacity-50 small">OPERASYON</div>
+
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/users">
+                    <i class="fas fa-fw fa-user-shield"></i>
+                    <span>Kullanıcılar</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/rentals">
+                    <i class="fas fa-fw fa-file-signature"></i>
+                    <span>Kiralamalar</span>
+                </a>
+            </li>
+
+            <hr class="sidebar-divider d-none d-md-block">
+
+            <div class="text-center d-none d-md-inline">
+                <button class="rounded-circle border-0" id="sidebarToggle"></button>
+            </div>
+        </ul>
+
+        <div id="content-wrapper" class="d-flex flex-column">
+            <div id="content">
+
+                <nav class="navbar navbar-expand navbar-light topbar mb-4 static-top">
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3 text-white">
+                        <i class="fa fa-bars"></i>
+                    </button>
+
+                    <div class="d-none d-sm-inline-block ml-md-3">
+                        <h6 class="text-white-50 mb-0 font-weight-light">Yönetim Konsolu v2.0</h6>
+                    </div>
+
+                    <ul class="navbar-nav ml-auto align-items-center">
+                        <li class="nav-item">
+                            <a class="btn btn-view-site shadow-sm mr-4" href="/">
+                                <i class="fas fa-external-link-alt fa-sm mr-2"></i> Vitrine Dön
+                            </a>
+                        </li>
+
+                        <div class="topbar-divider d-none d-sm-block" style="opacity: 0.1;"></div>
+
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle admin-profile-badge" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="mr-1 d-none d-lg-inline small">Yönetici</span>
+                                <div class="user-icon-circle">
+                                    <i class="fas fa-user-cog"></i>
+                                </div>
+                            </a>
+
+                            <div class="dropdown-menu dropdown-menu-right shadow-lg border-0 animated--grow-in p-2" style="border-radius: 15px; background: #fff;">
+                                <a class="dropdown-item rounded-lg py-2" href="/profile">
+                                    <i class="fas fa-user-edit fa-sm fa-fw mr-2 text-gray-400"></i> Profilimi Düzenle
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item rounded-lg py-2 text-danger font-weight-bold" href="#" onclick="logout()">
+                                    <i class="fas fa-power-off fa-sm fa-fw mr-2"></i> Güvenli Çıkış
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </nav>
+
+                <div class="container-fluid pt-2">
+                    @RenderBody()
+                </div>
+
+            </div>
+
+            <footer class="sticky-footer">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto text-gray-500 small">
+                        <span><strong>Sureninden</strong> &copy; @DateTime.Now.Year - Premium Dashboard Arda</span>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <script src="~/sbadmin/vendor/jquery/jquery.min.js"></script>
+    <script src="~/sbadmin/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/sbadmin/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="~/sbadmin/js/sb-admin-2.min.js"></script>
+    <script src="~/js/api-service.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

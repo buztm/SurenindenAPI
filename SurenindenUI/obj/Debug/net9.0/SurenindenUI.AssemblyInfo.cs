@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SurenindenUI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d8ef63717c3804895aa5ad90967cda16b6975ae7")]
 [assembly: System.Reflection.AssemblyProductAttribute("SurenindenUI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SurenindenUI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

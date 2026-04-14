@@ -19,6 +19,36 @@ html {
 
 body {
   margin-bottom: 60px;
+  background: linear-gradient(180deg, #f4f7fb 0%, #ffffff 100%);
+  color: #212529;
+}
+
+.container-fluid, .container {
+  max-width: 1200px;
+}
+
+.card {
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(16, 24, 40, 0.06);
+}
+
+.navbar-brand {
+  letter-spacing: 0.2px;
+}
+
+.card-header {
+  background: transparent;
+  border-bottom: none;
+  font-weight: 700;
+}
+
+.btn-primary {
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+}
+
+.form-control {
+  border-radius: 8px;
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
@@ -28,4 +58,64 @@ body {
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
+}
+
+/* Admin Sidebar */
+.sidebar {
+  background: linear-gradient(180deg, #1e3a5f 0%, #2c3e50 100%);
+  min-height: calc(100vh - 60px);
+  position: fixed;
+  left: 0;
+  top: 60px;
+  overflow-y: auto;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+}
+
+.sidebar-header {
+  border-bottom: 2px solid rgba(13, 110, 253, 0.3);
+}
+
+.sidebar .nav-link {
+  color: #b8c5d6 !important;
+  padding: 0.8rem 1.5rem;
+  border-left: 3px solid transparent;
+  transition: all 0.3s ease;
+  margin-bottom: 0.5rem;
+}
+
+.sidebar .nav-link:hover {
+  background-color: rgba(13, 110, 253, 0.1);
+  border-left-color: #0d6efd;
+  color: #0d6efd !important;
+  transform: translateX(5px);
+}
+
+.sidebar .nav-link.active {
+  background-color: rgba(13, 110, 253, 0.15);
+  border-left-color: #0d6efd;
+  color: #0d6efd !important;
+  font-weight: 600;
+}
+
+.sidebar .nav-link i {
+  margin-right: 10px;
+  width: 20px;
+}
+
+.admin-main {
+  margin-left: 16.66%;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: relative;
+    min-height: auto;
+    width: 100%;
+    left: 0;
+    top: 0;
+  }
+  .admin-main {
+    margin-left: 0;
+  }
 }

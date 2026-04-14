@@ -1,0 +1,440 @@
+﻿@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Araç Filosu - Sureninden";
+}
+
+<style>
+    :root {
+        --brand-yellow: #FFD700;
+        --brand-dark: #1A1A1A;
+    }
+
+    .premium-header {
+        background: linear-gradient(rgba(26,26,26,0.9), rgba(26,26,26,0.9)), url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1500&q=80');
+        background-size: cover;
+        background-position: center;
+        border-radius: 24px;
+        padding: 4rem 2rem;
+        color: white;
+        margin-bottom: 3rem;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        border-bottom: 4px solid var(--brand-yellow);
+    }
+
+    .filter-sidebar {
+        background: white;
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        position: sticky;
+        top: 100px;
+        border: 1px solid rgba(0,0,0,0.03);
+    }
+
+    .filter-label {
+        font-weight: 700;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #adb5bd;
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    .custom-control {
+        border-radius: 12px;
+        background-color: #f8f9fa;
+        border: 2px solid transparent;
+        transition: 0.3s;
+    }
+
+        .custom-control:focus {
+            border-color: var(--brand-yellow);
+            background-color: white;
+            box-shadow: none;
+        }
+
+    .car-card-premium {
+        background: white;
+        border-radius: 24px;
+        border: none;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    }
+
+        .car-card-premium:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.12);
+        }
+
+    .car-img-box {
+        position: relative;
+        height: 200px;
+        overflow: hidden;
+        background: #000;
+    }
+
+        .car-img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: 0.5s;
+        }
+
+    .car-card-premium:hover .car-img-box img {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+
+    .year-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: var(--brand-yellow);
+        color: var(--brand-dark);
+        padding: 4px 12px;
+        border-radius: 8px;
+        font-weight: 800;
+        font-size: 0.7rem;
+        z-index: 5;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .price-tag {
+        font-size: 1.6rem;
+        font-weight: 900;
+        color: var(--brand-dark);
+    }
+
+        .price-tag span {
+            font-size: 0.8rem;
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+    .spec-item {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 8px 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #495057;
+    }
+
+    .btn-rent-now {
+        background: var(--brand-yellow);
+        color: var(--brand-dark);
+        font-weight: 800;
+        border: none;
+        border-radius: 14px;
+        padding: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: 0.3s;
+    }
+
+        .btn-rent-now:hover {
+            background: var(--brand-dark);
+            color: var(--brand-yellow);
+        }
+
+    .result-stats {
+        background: white;
+        padding: 1rem 1.5rem;
+        border-radius: 16px;
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    /* Detay Görsel İyileştirmesi */
+    .detail-img-box {
+        width: 100%;
+        height: 400px;
+        background: #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+        .detail-img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+</style>
+
+<div class="premium-header text-center">
+    <h1 class="display-4 fw-bold mb-2">Seçkin Araç Koleksiyonu</h1>
+    <p class="lead opacity-75">Sizin için özenle seçilmiş premium araçlarımızı keşfedin.</p>
+</div>
+
+<div class="row">
+    <div class="col-lg-3">
+        <div class="filter-sidebar">
+            <h5 class="fw-bold mb-4 text-dark"><i class="fas fa-sliders-h me-2 text-warning"></i> Filtrele</h5>
+
+            <div class="mb-4">
+                <label class="filter-label">Fiyat Aralığı (Günlük)</label>
+                <div class="row g-2">
+                    <div class="col-6"><input type="number" id="minPrice" class="form-control custom-control" placeholder="Min"></div>
+                    <div class="col-6"><input type="number" id="maxPrice" class="form-control custom-control" placeholder="Max"></div>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="filter-label">Araç Kategorisi</label>
+                <select id="category" class="form-select custom-control"></select>
+            </div>
+
+            <div class="mb-4">
+                <label class="filter-label">Yakıt Tipi</label>
+                <select id="fuelType" class="form-select custom-control">
+                    <option value="">Tümü</option>
+                    <option value="Benzin">Benzin</option>
+                    <option value="Dizel">Dizel</option>
+                    <option value="Elektrik">Elektrik</option>
+                    <option value="Hibrit">Hibrit</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label class="filter-label">Vites</label>
+                <select id="transmission" class="form-select custom-control">
+                    <option value="">Tümü</option>
+                    <option value="Manuel">Manuel</option>
+                    <option value="Otomatik">Otomatik</option>
+                </select>
+            </div>
+
+            <button class="btn btn-warning w-100 fw-bold py-3 mb-2 shadow-sm" style="border-radius:12px;" onclick="applyFilters()">Sonuçları Listele</button>
+            <button class="btn btn-link w-100 text-muted small text-decoration-none" onclick="resetFilters()">Temizle</button>
+        </div>
+    </div>
+
+    <div class="col-lg-9">
+        <div class="result-stats shadow-sm">
+            <span id="resultCount" class="fw-bold text-muted small">Yükleniyor...</span>
+            <div class="d-flex align-items-center gap-2">
+                <span class="small text-muted fw-bold">SIRALA:</span>
+                <select id="sortBy" class="form-select form-select-sm border-0 bg-light fw-bold" style="width: 160px; border-radius: 8px;" onchange="applySorting()">
+                    <option value="">Önerilen</option>
+                    <option value="price-asc">En Düşük Fiyat</option>
+                    <option value="price-desc">En Yüksek Fiyat</option>
+                    <option value="year-new">En Yeni Modeller</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row g-4" id="carsList"></div>
+
+        <div id="noResults" class="text-center py-5" style="display:none;">
+            <div class="bg-white rounded-5 p-5 shadow-sm">
+                <i class="fas fa-search fa-4x text-warning mb-4 opacity-25"></i>
+                <h4 class="fw-bold">Aradığınızı Bulamadık</h4>
+                <p class="text-muted">Kriterleri yumuşatarak tekrar aramayı deneyin.</p>
+                <button class="btn btn-dark fw-bold px-5 py-3 rounded-pill mt-3" onclick="resetFilters()">Tüm Arşiv</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="carDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 30px; overflow: hidden;">
+            <div class="modal-body p-0" id="carDetailContent"></div>
+            <div class="modal-footer border-0 p-4">
+                <button type="button" class="btn btn-light px-4 fw-bold rounded-pill" data-bs-dismiss="modal">Kapat</button>
+                <button type="button" class="btn btn-warning px-5 fw-bold text-dark rounded-pill shadow-sm" id="rentButton" onclick="rentCar()">KİRALAMAYI BAŞLAT</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let allCars = [];
+        let filteredCars = [];
+        let currentCarForRent = null;
+
+        $(document).ready(function() {
+            loadCategories();
+            loadCars();
+        });
+
+        function loadCategories() {
+            ApiService.categories.getAll()
+                .then(data => {
+                    const select = $('#category');
+                    select.html('<option value="">Tümü</option>');
+                    data.forEach(cat => {
+                        select.append(`<option value="${cat.id}">${cat.name}</option>`);
+                    });
+                });
+        }
+
+        function loadCars() {
+            ApiService.cars.getAvailable()
+                .then(data => {
+                    allCars = data || [];
+                    filteredCars = [...allCars];
+                    displayCars(filteredCars);
+                })
+                .catch(() => {
+                    $('#carsList').html('<div class="col-12 text-center text-danger py-5">Sunucuya ulaşılamıyor.</div>');
+                });
+        }
+
+        function displayCars(cars) {
+            if (!cars || cars.length === 0) {
+                $('#carsList').empty();
+                $('#noResults').show();
+                $('#resultCount').text('0 Sonuç');
+                return;
+            }
+
+            $('#noResults').hide();
+            $('#resultCount').text(`${cars.length} Araç Mevcut`);
+
+            let html = '';
+            cars.forEach(car => {
+                const defaultImg = '/images/car-default.jpg';
+                const fullImagePath = car.imagePath ? `https://localhost:7008${car.imagePath}` : defaultImg;
+
+                html += `
+                    <div class="col-md-6 col-xl-4">
+                        <div class="car-card-premium h-100 d-flex flex-column">
+                            <div class="car-img-box">
+                                <span class="year-badge">${car.year}</span>
+                                <img src="${fullImagePath}" onerror="this.src='${defaultImg}'">
+                            </div>
+                            <div class="p-4 flex-grow-1 d-flex flex-column">
+                                <div class="price-tag mb-1">₺${car.dailyPrice.toLocaleString('tr-TR')} <span>/ GÜN</span></div>
+                                <h5 class="fw-bold text-dark mb-3">${car.brand} ${car.model}</h5>
+                                <div class="d-flex flex-wrap gap-2 mb-4">
+                                    <span class="spec-item"><i class="fas fa-gas-pump me-1 text-warning"></i> ${car.fuelType}</span>
+                                    <span class="spec-item"><i class="fas fa-cog me-1 text-warning"></i> ${car.transmission}</span>
+                                </div>
+                                <div class="d-grid gap-2 mt-auto">
+                                    <button class="btn btn-rent-now" onclick="prepareRent(${car.id})">KİRALA</button>
+                                    <button class="btn btn-link text-muted small text-decoration-none fw-bold" onclick="viewDetails(${car.id})">TEKNİK ÖZELLİKLER</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+            $('#carsList').html(html);
+        }
+
+        function applyFilters() {
+            const minPrice = $('#minPrice').val() || null;
+            const maxPrice = $('#maxPrice').val() || null;
+            const categoryId = $('#category').val() || null;
+            const fuelType = $('#fuelType').val() || null;
+            const transmission = $('#transmission').val() || null;
+
+            ApiService.cars.filter(minPrice, maxPrice, fuelType, transmission, categoryId)
+                .then(data => {
+                    filteredCars = data || [];
+                    displayCars(filteredCars);
+                });
+        }
+
+        function resetFilters() {
+            $('#minPrice, #maxPrice, #category, #fuelType, #transmission, #sortBy').val('');
+            filteredCars = [...allCars];
+            displayCars(allCars);
+        }
+
+        function applySorting() {
+            const sortBy = $('#sortBy').val();
+            let sorted = [...filteredCars];
+            if (sortBy === 'price-asc') sorted.sort((a, b) => a.dailyPrice - b.dailyPrice);
+            else if (sortBy === 'price-desc') sorted.sort((a, b) => b.dailyPrice - a.dailyPrice);
+            else if (sortBy === 'year-new') sorted.sort((a, b) => b.year - a.year);
+            displayCars(sorted);
+        }
+
+        function viewDetails(carId) {
+            const car = allCars.find(c => c.id === carId);
+            const fullImagePath = car.imagePath ? `https://localhost:7008${car.imagePath}` : '/images/car-default.jpg';
+
+            const detailHtml = `
+                <div class="p-0">
+                    <div class="detail-img-box">
+                        <img src="${fullImagePath}">
+                    </div>
+                    <div class="p-4 px-5">
+                        <div class="row align-items-center">
+                            <div class="col-md-7">
+                                <h2 class="fw-black text-dark mb-1">${car.brand} ${car.model}</h2>
+                                <p class="text-muted fw-bold">PLAKA: ${car.plate}</p>
+                            </div>
+                            <div class="col-md-5 text-md-end">
+                                <div class="price-tag text-warning">₺${car.dailyPrice.toLocaleString('tr-TR')} <span class="text-dark small">/ GÜNLÜK</span></div>
+                            </div>
+                        </div>
+                        <hr class="my-4 opacity-5">
+                        <div class="row g-3 text-center">
+                            <div class="col-4"><div class="p-3 bg-light rounded-4"><small class="d-block text-muted fw-bold">YIL</small><b class="text-dark">${car.year}</b></div></div>
+                            <div class="col-4"><div class="p-3 bg-light rounded-4"><small class="d-block text-muted fw-bold">YAKIT</small><b class="text-dark">${car.fuelType}</b></div></div>
+                            <div class="col-4"><div class="p-3 bg-light rounded-4"><small class="d-block text-muted fw-bold">VİTES</small><b class="text-dark">${car.transmission}</b></div></div>
+                        </div>
+                    </div>
+                </div>`;
+            $('#carDetailTitle').text('Teknik İnceleme');
+            $('#carDetailContent').html(detailHtml);
+            $('#rentButton').hide();
+            new bootstrap.Modal('#carDetailModal').show();
+        }
+
+        function prepareRent(carId) {
+            const car = allCars.find(c => c.id === carId);
+            currentCarForRent = car;
+            const today = new Date().toISOString().split('T')[0];
+
+            const rentContent = `
+                <div class="p-5 text-center">
+                    <div class="mb-4">
+                        <i class="fas fa-key fa-4x text-warning opacity-50 mb-3"></i>
+                        <h3 class="fw-black text-dark">${car.brand} ${car.model}</h3>
+                        <p class="text-muted">Günlük <b>₺${car.dailyPrice.toLocaleString('tr-TR')}</b> bedel ile rezervasyon.</p>
+                    </div>
+                    <div class="bg-light p-4 rounded-5 text-start mb-4">
+                        <label class="filter-label text-dark">TESLİMAT TARİHİ SEÇİN</label>
+                        <input type="date" id="rentStartDateInput" class="form-control custom-control border-0 shadow-sm" min="${today}" value="${today}">
+                    </div>
+                    <div class="alert alert-warning border-0 small rounded-4">
+                        <i class="fas fa-shield-alt me-2"></i> Kiralama onayı sonrası müşteri temsilcimiz sizinle iletişime geçecektir.
+                    </div>
+                </div>`;
+            $('#carDetailTitle').text('Hızlı Rezervasyon');
+            $('#carDetailContent').html(rentContent);
+            $('#rentButton').show().text('REZERVASYONU TAMAMLA');
+            new bootstrap.Modal('#carDetailModal').show();
+        }
+
+        function rentCar() {
+            const stored = localStorage.getItem('authUser');
+            if (!stored) { window.location.href = '/auth/login'; return; }
+            const startDate = $('#rentStartDateInput').val();
+            const user = JSON.parse(stored);
+
+            $('#rentButton').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
+
+            ApiService.rentals.rent({
+                carId: currentCarForRent.id,
+                appUserId: user.id,
+                rentDate: startDate,
+                totalPrice: currentCarForRent.dailyPrice
+            }).then(() => location.reload())
+              .catch(err => {
+                  if (err.status === 200 || err.status === 201) location.reload();
+                  else alert("Hata: " + (err.message || "Başarısız"));
+              });
+        }
+    </script>
+}

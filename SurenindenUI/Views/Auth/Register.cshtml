@@ -1,0 +1,304 @@
+﻿@{
+    ViewData["Title"] = "Kayıt Ol - Sureninden";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>@ViewData["Title"]</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/sbadmin/vendor/fontawesome-free/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --brand-yellow: #FFD700;
+            --brand-dark: #1A1A1A;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 2rem 0;
+        }
+
+        .register-card {
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 24px;
+            background: rgba(26, 26, 26, 0.85);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 550px;
+            overflow: hidden;
+        }
+
+        .register-header {
+            padding: 2.5rem 2rem 1rem;
+            text-align: center;
+        }
+
+        .brand-icon-box {
+            width: 60px;
+            height: 60px;
+            background: var(--brand-yellow);
+            color: var(--brand-dark);
+            border-radius: 15px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            transform: rotate(-10deg);
+            box-shadow: 0 10px 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .brand-title {
+            color: white;
+            font-weight: 800;
+            font-size: 1.6rem;
+            letter-spacing: 1px;
+            margin-bottom: 0;
+            text-transform: uppercase;
+        }
+
+        .brand-subtitle {
+            color: var(--brand-yellow);
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-top: 5px;
+            opacity: 0.8;
+        }
+
+        .custom-input {
+            border-radius: 12px;
+            padding: 0.8rem 1.2rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05) !important;
+            color: white !important;
+            font-weight: 400;
+            transition: all 0.3s;
+        }
+
+            .custom-input::placeholder {
+                color: rgba(255,255,255,0.3);
+            }
+
+            .custom-input:focus {
+                background: rgba(255,255,255,0.1) !important;
+                border-color: var(--brand-yellow);
+                box-shadow: 0 0 0 0.25rem rgba(255,215,0,0.15);
+            }
+
+        .form-label {
+            font-weight: 600;
+            color: rgba(255,255,255,0.6);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-left: 5px;
+            margin-bottom: 6px;
+        }
+
+        .requirement-card {
+            background: rgba(255, 215, 0, 0.05);
+            border: 1px dashed rgba(255, 215, 0, 0.2);
+            border-radius: 15px;
+            padding: 1rem;
+        }
+
+        .btn-premium {
+            background: var(--brand-yellow);
+            color: var(--brand-dark);
+            font-weight: 700;
+            border: none;
+            padding: 0.9rem;
+            border-radius: 14px;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+            .btn-premium:hover {
+                background-color: #fff;
+                transform: translateY(-3px);
+                box-shadow: 0 10px 25px rgba(255, 215, 0, 0.4);
+            }
+
+        .footer-text {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.85rem;
+        }
+
+        .login-link {
+            color: var(--brand-yellow);
+            text-decoration: none;
+            font-weight: 700;
+            transition: 0.3s;
+        }
+
+            .login-link:hover {
+                color: white;
+            }
+
+        .alert {
+            background: rgba(220, 53, 69, 0.2);
+            border: 1px solid rgba(220, 53, 69, 0.4);
+            color: #ff8d97;
+            border-radius: 12px;
+            font-size: 0.85rem;
+        }
+
+        .alert-success {
+            background: rgba(25, 135, 84, 0.2);
+            border: 1px solid rgba(25, 135, 84, 0.4);
+            color: #7ef2bb;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container px-3">
+        <div class="row justify-content-center">
+            <div class="card register-card">
+                <div class="register-header">
+                    <div class="brand-icon-box">
+                        <i class="fas fa-user-plus fa-lg"></i>
+                    </div>
+                    <h1 class="brand-title">Yeni Üyelik</h1>
+                    <div class="brand-subtitle">Join the Elite Drive</div>
+                </div>
+
+                <div class="card-body p-4">
+                    <form id="registerForm">
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label class="form-label">Kullanıcı Adı</label>
+                                <input type="text" class="form-control custom-input" id="username" placeholder="Benzersiz bir ad seçin" required autocomplete="off">
+                            </div>
+
+                            <div class="col-12 mb-3">
+                                <label class="form-label">E-Posta Adresi</label>
+                                <input type="email" class="form-control custom-input" id="email" placeholder="ornek@mail.com" required autocomplete="off">
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Şifre</label>
+                                <input type="password" class="form-control custom-input" id="password" placeholder="••••••••" required>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Şifre Tekrar</label>
+                                <input type="password" class="form-control custom-input" id="confirmPassword" placeholder="••••••••" required>
+                            </div>
+                        </div>
+
+                        <div class="requirement-card mb-4 mt-2">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-shield-alt text-warning me-2 small"></i>
+                                <span class="small fw-bold text-white-50 text-uppercase" style="letter-spacing: 1px;">Güvenlik Kontrolü</span>
+                            </div>
+                            <div class="d-flex gap-3">
+                                <span class="small text-white-50"><i class="fas fa-check-circle text-success me-1"></i> Min. 6 Karakter</span>
+                                <span class="small text-white-50"><i class="fas fa-check-circle text-success me-1"></i> Harf & Rakam</span>
+                            </div>
+                        </div>
+
+                        <div id="registerAlert"></div>
+
+                        <button type="submit" class="btn btn-premium w-100 mb-3" id="registerBtn">
+                            Üyeliği Tamamla <i class="fas fa-chevron-right ms-2"></i>
+                        </button>
+                    </form>
+
+                    <div class="text-center mt-4 mb-2">
+                        <p class="footer-text mb-0">Zaten bir hesabınız var mı?</p>
+                        <a href="/auth/login" class="login-link">Giriş Paneline Dön</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/sbadmin/vendor/jquery/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/api-service.js"></script>
+    <script src="~/js/site.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#registerForm').on('submit', function(e) {
+                e.preventDefault();
+                register();
+                return false;
+            });
+        });
+
+        function isActuallySuccess(error) {
+            if (!error) return false;
+            if (error instanceof SyntaxError || (error.message && error.message.toLowerCase().includes('json'))) return true;
+            if (error.status && error.status >= 200 && error.status < 300) return true;
+            return false;
+        }
+
+        function register() {
+            const username = $('#username').val();
+            const email = $('#email').val();
+            const password = $('#password').val();
+            const confirmPassword = $('#confirmPassword').val();
+            const btn = $('#registerBtn');
+
+            if (password !== confirmPassword) {
+                showRegisterAlert('Şifreler birbiriyle eşleşmiyor.', 'warning');
+                return false;
+            }
+
+            btn.prop('disabled', true).html('<i class="fas fa-circle-notch fa-spin"></i>');
+
+            ApiService.auth.register(username, email, password)
+                .then(() => handleSuccessfulRegistration(username, password))
+                .catch(error => {
+                    if (isActuallySuccess(error)) handleSuccessfulRegistration(username, password);
+                    else {
+                        const msg = error.responseJSON?.message || 'Kayıt sırasında bir hata oluştu.';
+                        showRegisterAlert(msg, 'danger');
+                        btn.prop('disabled', false).html('Üyeliği Tamamla <i class="fas fa-chevron-right ms-2"></i>');
+                    }
+                });
+            return false;
+        }
+
+        function handleSuccessfulRegistration(username, password) {
+            showRegisterAlert('Kayıt başarılı! Oturum açılıyor...', 'success');
+            ApiService.auth.login(username, password).then(data => {
+                ApiService.setToken(data.token);
+                localStorage.setItem('authUser', JSON.stringify({
+                    id: data.userId || data.id,
+                    userName: data.userName || username,
+                    email: data.email || '',
+                    roles: data.roles || []
+                }));
+                window.location.href = '/';
+            }).catch(() => { window.location.href = '/auth/login'; });
+        }
+
+        function showRegisterAlert(message, type) {
+            const alert = `<div class="alert alert-${type} border-0 shadow-sm mb-4">${message}</div>`;
+            $('#registerAlert').html(alert);
+        }
+    </script>
+</body>
+</html>

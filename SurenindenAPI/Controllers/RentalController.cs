@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SurenindenAPI.DTOs;
 using SurenindenAPI.Models;
 using SurenindenAPI.Repositories;
@@ -11,11 +12,15 @@ public class RentalController : ControllerBase
 {
     private readonly IGenericRepository<Rental> _rentalRepo;
     private readonly IGenericRepository<Car> _carRepo;
+    private readonly AppDbContext _context;
 
-    public RentalController(IGenericRepository<Rental> rentalRepo, IGenericRepository<Car> carRepo)
+    public RentalController(IGenericRepository<Rental> rentalRepo,
+                            IGenericRepository<Car> carRepo,
+                            AppDbContext context)
     {
         _rentalRepo = rentalRepo;
         _carRepo = carRepo;
+        _context = context; 
     }
 
     [HttpPost("rent")]
@@ -30,7 +35,7 @@ public class RentalController : ControllerBase
             CarId = model.CarId,
             AppUserId = model.AppUserId,
             RentDate = model.RentDate,
-            ReturnDate = model.ReturnDate,
+            ReturnDate = null,
             TotalPrice = model.TotalPrice
         };
 
@@ -52,25 +57,64 @@ public class RentalController : ControllerBase
     }
 
     [Authorize(Roles = "Admin")]
-    [HttpPost("return/{rentalId}")]
-    public async Task<IActionResult> ReturnCar(int rentalId)
+    [HttpGet("getall")]
+    public async Task<IActionResult> GetAll()
     {
-        var rental = await _rentalRepo.GetByIdAsync(rentalId);
-        if (rental == null) return NotFound("Kiralama kaydı bulunamadı.");
+        var rentals = await _rentalRepo.GetAllAsync();
+        var cars = await _carRepo.GetAllAsync();
 
-        var car = await _carRepo.GetByIdAsync(rental.CarId);
-        if (car == null) return NotFound("İlgili araç bulunamadı.");
+        var users = await _context.Users.ToListAsync(); 
 
-        car.IsAvailable = true;
-        _carRepo.Update(car);
+        var result = rentals.Select(r => {
+            var car = cars.FirstOrDefault(c => c.Id == r.CarId);
+            var user = users.FirstOrDefault(u => u.Id == r.AppUserId);
 
-        rental.ReturnDate = DateTime.Now;
-        _rentalRepo.Update(rental);
+            return new RentalDetailDTO
+            {
+                Id = r.Id,
+                CarId = r.CarId,
+                CarInfo = car != null ? $"{car.Brand} {car.Model}" : "Bilinmeyen Araç",
+                Plate = car?.Plate ?? "-",
+                AppUserId = r.AppUserId,
+                UserName = user?.UserName ?? "Bilinmeyen Kullanıcı",
+                UserEmail = user?.Email ?? "-",
+                RentDate = r.RentDate,
+                ReturnDate = r.ReturnDate,
+                TotalPrice = r.TotalPrice
+            };
+        }).OrderByDescending(x => x.RentDate).ToList();
 
-        // 5. Değişiklikleri kaydet
-        await _carRepo.SaveAsync();
-        await _rentalRepo.SaveAsync();
+        return Ok(result);
+    }
 
-        return Ok("Araç başarıyla teslim alındı ve tekrar kiralanabilir duruma getirildi.");
+    [Authorize(Roles = "Admin")]
+    [HttpPost("return/{rentalId}")]
+    public async Task<IActionResult> ReturnCar(int rentalId, [FromQuery] decimal finalPrice, [FromQuery] DateTime returnDate)
+    {
+        try
+        {
+            var rental = await _rentalRepo.GetByIdAsync(rentalId);
+            if (rental == null) return NotFound(new { message = "Kiralama kaydı bulunamadı." });
+
+            var car = await _carRepo.GetByIdAsync(rental.CarId);
+            if (car == null) return NotFound(new { message = "İlgili araç bulunamadı." });
+
+            car.IsAvailable = true;
+            _carRepo.Update(car);
+
+            rental.ReturnDate = returnDate;
+            rental.TotalPrice = finalPrice;
+
+            _rentalRepo.Update(rental);
+
+            await _carRepo.SaveAsync();
+            await _rentalRepo.SaveAsync();
+
+            return Ok(new { message = "Araç başarıyla teslim alındı." });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = ex.Message });
+        }
     }
 }

@@ -174,3 +174,5 @@ D:\Projects\CSharp Projects\SurenindenAPI\SurenindenAPI\bin\Debug\net9.0\runtime
 D:\Projects\CSharp Projects\SurenindenAPI\SurenindenAPI\bin\Debug\net9.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
 D:\Projects\CSharp Projects\SurenindenAPI\SurenindenAPI\bin\Debug\net9.0\AutoMapper.dll
 D:\Projects\CSharp Projects\SurenindenAPI\SurenindenAPI\bin\Debug\net9.0\System.Diagnostics.DiagnosticSource.dll
+D:\Projects\CSharp Projects\SurenindenAPI\SurenindenAPI\obj\Debug\net9.0\SurenindenAPI.sourcelink.json
+D:\Projects\CSharp Projects\SurenindenAPI\SurenindenAPI\bin\Debug\net9.0\SurenindenAPI.staticwebassets.runtime.json

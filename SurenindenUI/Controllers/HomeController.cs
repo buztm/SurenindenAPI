@@ -18,6 +18,11 @@ namespace SurenindenUI.Controllers
             return View();
         }
 
+        public IActionResult Cars()
+        {
+            return View();
+        }
+
         public IActionResult Privacy()
         {
             return View();

@@ -1,0 +1,320 @@
+﻿@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Kiralama Yönetimi";
+}
+
+<style>
+    .premium-table thead th {
+        background-color: #f8f9fa;
+        border: none;
+        color: #1A1A1A;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        padding: 1.25rem;
+    }
+
+    .premium-table tbody td {
+        vertical-align: middle;
+        padding: 1.25rem;
+        border-color: #f1f3f9;
+    }
+
+    .search-wrapper {
+        position: relative;
+        width: 300px;
+    }
+
+        .search-wrapper i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #A0A0A0;
+        }
+
+    .search-input {
+        padding-left: 40px !important;
+        border-radius: 12px !important;
+        border: 2px solid #f1f3f9 !important;
+        height: 45px !important;
+    }
+
+        .search-input:focus {
+            border-color: #FFD700 !important;
+            box-shadow: none !important;
+        }
+
+    .rental-card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+
+    .status-badge {
+        padding: 6px 14px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+    }
+
+    .btn-return-action {
+        background-color: #1A1A1A;
+        color: #FFD700;
+        font-weight: 700;
+        border: none;
+        border-radius: 10px;
+        padding: 6px 15px;
+        font-size: 0.8rem;
+        transition: all 0.3s;
+    }
+
+        .btn-return-action:hover {
+            background-color: #FFD700;
+            color: #1A1A1A;
+            transform: scale(1.05);
+        }
+
+    .date-info {
+        font-size: 0.85rem;
+        color: #495057;
+        line-height: 1.4;
+    }
+</style>
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800 font-weight-bold">Kiralama Kayıtları</h1>
+    <div class="search-wrapper">
+        <i class="fas fa-search"></i>
+        <input type="text" id="rentalSearchInput" class="form-control search-input bg-white" placeholder="Araç, Plaka veya Müşteri..." onkeyup="filterRentals()">
+    </div>
+</div>
+
+<div class="row mb-4" id="statsArea"></div>
+
+<div class="card rental-card">
+    <div class="card-header bg-white border-0 py-3 mt-2">
+        <h6 class="m-0 font-weight-bold text-dark"><i class="fas fa-history mr-2 text-warning"></i> Tüm İşlemler</h6>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table premium-table table-hover mb-0" id="rentalsTable">
+                <thead>
+                    <tr>
+                        <th>Araç & Plaka</th>
+                        <th>Müşteri</th>
+                        <th>Zaman Çizelgesi</th>
+                        <th>Toplam Tutar</th>
+                        <th class="text-center">Durum</th>
+                        <th class="text-center">Yönet</th>
+                    </tr>
+                </thead>
+                <tbody id="rentalsList">
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-5">
+                            <i class="fas fa-spinner fa-spin fa-2x mb-3 d-block text-warning"></i>
+                            Kayıtlar taranıyor...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="rentalDetailModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-header border-0 bg-dark text-white p-4" style="border-radius: 20px 20px 0 0;">
+                <h5 class="modal-title fw-bold"><i class="fas fa-file-invoice mr-2 text-warning"></i> İşlem Detayı</h5>
+                <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
+            </div>
+            <div class="modal-body p-0" id="rentalDetailContent"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="returnModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-header border-0 bg-success text-white p-4" style="border-radius: 20px 20px 0 0;">
+                <h5 class="modal-title fw-bold text-white"><i class="fas fa-car-check me-2"></i>Aracı Teslim Al</h5>
+                <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
+            </div>
+            <div class="modal-body p-4">
+                <input type="hidden" id="returnRentalId">
+                <div class="form-group mb-3">
+                    <label class="font-weight-bold small text-uppercase text-muted">İade Tarihi</label>
+                    <input type="date" id="returnDateInput" class="form-control search-input bg-light border-0">
+                </div>
+                <div class="form-group mb-0">
+                    <label class="font-weight-bold small text-uppercase text-muted">Son Toplam Tutar (₺)</label>
+                    <input type="number" id="returnPriceInput" class="form-control search-input bg-light border-0" placeholder="Örn: 5000">
+                    <small class="text-muted mt-2 d-block">Hasar veya ek masraf varsa tutarı güncelleyebilirsiniz.</small>
+                </div>
+            </div>
+            <div class="modal-footer border-0 p-4 pt-0">
+                <button type="button" class="btn btn-light px-4" data-dismiss="modal" style="border-radius: 12px;">Vazgeç</button>
+                <button type="button" class="btn btn-success px-5 font-weight-bold shadow-sm" onclick="confirmReturn()" style="border-radius: 12px;">Teslimatı Tamamla</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let allRentalsData = [];
+
+        $(document).ready(function() {
+            loadRentals();
+        });
+
+        function loadRentals() {
+            ApiService.rentals.getAll()
+                .then(data => {
+                    allRentalsData = data || [];
+                    renderTable(allRentalsData);
+                })
+                .catch(() => {
+                    $('#rentalsList').html('<tr><td colspan="6" class="text-center text-danger py-5">Veriler yüklenemedi.</td></tr>');
+                });
+        }
+
+        function renderTable(data) {
+            let html = '';
+            if (!data || data.length === 0) {
+                html = '<tr><td colspan="6" class="text-center text-muted py-5">Kiralama kaydı bulunamadı.</td></tr>';
+            } else {
+                data.forEach(rental => {
+                    const isReturned = rental.returnDate && new Date(rental.returnDate).getFullYear() > 2000;
+
+                    const statusHtml = isReturned ?
+                        '<span class="status-badge bg-success-light text-success"><i class="fas fa-check mr-1"></i> Tamamlandı</span>' :
+                        '<span class="status-badge bg-warning-light text-warning"><i class="fas fa-spinner fa-spin mr-1"></i> Aktif</span>';
+
+                    const actionHtml = !isReturned ?
+                        `<button class="btn btn-return-action shadow-sm" onclick="event.stopPropagation(); completeRental(${rental.id}, ${rental.totalPrice})">Teslim Al</button>` :
+                        '<i class="fas fa-check-double text-success opacity-50"></i>';
+
+                    html += `
+                        <tr style="cursor:pointer" onclick="showRentalDetail(${rental.id})">
+                            <td>
+                                <div class="font-weight-bold text-dark">${rental.carInfo}</div>
+                                <span class="badge badge-light border text-muted px-2 mt-1" style="font-size: 0.7rem;">${rental.plate}</span>
+                            </td>
+                            <td>
+                                <div class="font-weight-bold text-primary" style="font-size: 0.9rem;">${rental.userName}</div>
+                                <small class="text-muted">${rental.userEmail}</small>
+                            </td>
+                            <td class="date-info">
+                                <span class="text-muted small">Başlangıç:</span> ${new Date(rental.rentDate).toLocaleDateString('tr-TR')}<br>
+                                <span class="text-muted small">İade:</span> ${isReturned ? new Date(rental.returnDate).toLocaleDateString('tr-TR') : '---'}
+                            </td>
+                            <td>
+                                <div class="font-weight-bold text-success" style="font-size: 1.1rem;">₺${rental.totalPrice.toLocaleString('tr-TR')}</div>
+                            </td>
+                            <td class="text-center">${statusHtml}</td>
+                            <td class="text-center">${actionHtml}</td>
+                        </tr>`;
+                });
+            }
+            $('#rentalsList').html(html);
+        }
+
+        function showRentalDetail(id) {
+            const r = allRentalsData.find(x => x.id === id);
+            if(!r) return;
+
+            const isReturned = r.returnDate && new Date(r.returnDate).getFullYear() > 2000;
+
+            const content = `
+                <div class="p-4">
+                    <div class="text-center mb-4 pt-2">
+                        <h4 class="text-dark fw-bold mb-0">${r.carInfo}</h4>
+                        <span class="badge badge-warning text-dark px-3 py-1 mt-2" style="border-radius: 50px;">${r.plate}</span>
+                    </div>
+
+                    <div class="p-3 mb-4" style="background: #f8f9fc; border-radius: 15px; border: 1px solid #edf2f9;">
+                        <label class="text-muted small fw-bold text-uppercase d-block mb-3">Müşteri Detayları</label>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-white shadow-sm rounded-circle d-flex align-items-center justify-content-center mr-3" style="width: 45px; height: 45px;">
+                                <i class="fas fa-user text-primary"></i>
+                            </div>
+                            <div>
+                                <div class="font-weight-bold text-dark">${r.userName}</div>
+                                <div class="small text-muted">${r.userEmail}</div>
+                            </div>
+                        </div>
+                        <div class="input-group input-group-sm mb-2">
+                            <input type="text" class="form-control border-0 bg-white small" value="${r.appUserId}" readonly id="userIdInput" style="border-radius: 8px 0 0 8px;">
+                            <div class="input-group-append">
+                                <button class="btn btn-dark" onclick="copyId()" style="border-radius: 0 8px 8px 0;"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row text-center mb-4">
+                        <div class="col-6">
+                            <label class="text-muted small fw-bold d-block">KİRALAMA TARİHİ</label>
+                            <span class="text-dark font-weight-bold">${new Date(r.rentDate).toLocaleString('tr-TR')}</span>
+                        </div>
+                        <div class="col-6 border-left">
+                            <label class="text-muted small fw-bold d-block">İADE TARİHİ</label>
+                            <span class="${isReturned ? 'text-dark font-weight-bold' : 'text-danger small italic'}">
+                                ${isReturned ? new Date(r.returnDate).toLocaleString('tr-TR') : 'Henüz İade Edilmedi'}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="bg-success text-white p-4 rounded-lg text-center shadow-sm" style="border-radius: 15px; background: linear-gradient(45deg, #1cc88a, #13855c);">
+                        <span class="text-uppercase small opacity-75 d-block mb-1">Toplam Tahsilat</span>
+                        <h2 class="font-weight-bold mb-0">₺${r.totalPrice.toLocaleString('tr-TR')}</h2>
+                    </div>
+                </div>
+            `;
+            $('#rentalDetailContent').html(content);
+            $('#rentalDetailModal').modal('show');
+        }
+
+        function copyId() {
+            const userId = $("#userIdInput").val();
+            navigator.clipboard.writeText(userId).then(() => {
+                const btn = $(".btn-dark");
+                const oldHtml = btn.html();
+                btn.html('<i class="fas fa-check"></i>');
+                setTimeout(() => btn.html(oldHtml), 2000);
+            });
+        }
+
+        function filterRentals() {
+            const val = $('#rentalSearchInput').val().toLowerCase().trim();
+            const filtered = allRentalsData.filter(r =>
+                r.carInfo.toLowerCase().includes(val) ||
+                r.plate.toLowerCase().includes(val) ||
+                r.userName.toLowerCase().includes(val) ||
+                r.userEmail.toLowerCase().includes(val)
+            );
+            renderTable(filtered);
+        }
+
+        function completeRental(rentalId, currentPrice) {
+            $('#returnRentalId').val(rentalId);
+            $('#returnPriceInput').val(currentPrice);
+            $('#returnDateInput').val(new Date().toISOString().split('T')[0]);
+            $('#returnModal').modal('show');
+        }
+
+        function confirmReturn() {
+            const id = $('#returnRentalId').val();
+            const price = $('#returnPriceInput').val();
+            const date = $('#returnDateInput').val();
+            if(!price || !date) return;
+
+            ApiService.request('POST', `/rental/return/${id}?finalPrice=${price}&returnDate=${date}`)
+                .then(() => { $('#returnModal').modal('hide'); loadRentals(); })
+                .catch(err => { if(err.status == 200) { $('#returnModal').modal('hide'); loadRentals(); } });
+        }
+    </script>
+}

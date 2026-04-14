@@ -1,0 +1,306 @@
+﻿@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Kategori Yönetimi";
+}
+
+<style>
+    .premium-table thead th {
+        background-color: #f8f9fa;
+        border: none;
+        color: #1A1A1A;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        padding: 1.25rem;
+    }
+
+    .premium-table tbody td {
+        vertical-align: middle;
+        padding: 1.25rem;
+        border-color: #f1f3f9;
+        color: #495057;
+    }
+
+    .action-btn {
+        width: 35px;
+        height: 35px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        margin: 0 3px;
+        transition: all 0.2s;
+    }
+
+    .premium-card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+
+    .category-input {
+        border-radius: 12px;
+        border: 2px solid #f1f3f9;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s;
+    }
+
+        .category-input:focus {
+            border-color: #FFD700;
+            box-shadow: 0 0 0 0.25rem rgba(255,215,0,0.1);
+        }
+
+    .btn-save-category {
+        background-color: #FFD700;
+        color: #1A1A1A;
+        font-weight: 700;
+        border: none;
+        border-radius: 12px;
+        padding: 12px;
+        transition: all 0.3s;
+    }
+
+        .btn-save-category:hover {
+            background-color: #1A1A1A;
+            color: #FFD700;
+            transform: translateY(-2px);
+        }
+</style>
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800 font-weight-bold">Kategoriler</h1>
+</div>
+
+<div id="pageAlert"></div>
+
+<div class="row">
+    <div class="col-lg-8 mb-4">
+        <div class="card premium-card">
+            <div class="card-header bg-white border-0 py-3 mt-2">
+                <h6 class="m-0 font-weight-bold text-dark"><i class="fas fa-layer-group mr-2 text-warning"></i> Mevcut Kategoriler</h6>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table premium-table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;" class="text-center">ID</th>
+                                <th>Kategori Tanımı</th>
+                                <th style="width: 150px;" class="text-center">Yönet</th>
+                            </tr>
+                        </thead>
+                        <tbody id="categoriesList">
+                            <tr>
+                                <td colspan="3" class="text-center text-muted py-5">
+                                    <i class="fas fa-spinner fa-spin fa-2x mb-3 d-block text-warning"></i>
+                                    Yükleniyor...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card premium-card sticky-top" style="top: 100px; z-index: 1;">
+            <div class="card-header bg-dark text-white border-0 py-3" style="border-radius: 20px 20px 0 0;">
+                <h6 class="m-0 font-weight-bold" id="formTitle"><i class="fas fa-plus-circle mr-2 text-warning"></i> Yeni Kategori</h6>
+            </div>
+            <div class="card-body p-4">
+                <form id="categoryForm">
+                    <input type="hidden" id="categoryId" />
+                    <div class="form-group mb-4">
+                        <label for="categoryName" class="font-weight-bold small text-uppercase text-muted">Kategori Adı</label>
+                        <input type="text" class="form-control category-input form-control-lg" id="categoryName" required placeholder="Örn: Elektrikli Araçlar" autocomplete="off" />
+                    </div>
+
+                    <div id="categoryFormAlert"></div>
+
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-save-category w-100 shadow-sm mb-2" id="saveCategoryBtn" onclick="saveCategory()">
+                            <i class="fas fa-check-circle mr-2"></i> Kaydet
+                        </button>
+                        <button type="button" class="btn btn-light w-100 py-2 border-0" id="cancelEditBtn" style="display:none; border-radius:12px;" onclick="resetForm()">
+                            İptal Et
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-body text-center p-5">
+                <div class="mb-4">
+                    <i class="fas fa-trash-alt text-danger fa-4x opacity-25"></i>
+                </div>
+                <h4 class="font-weight-bold text-dark">Kategoriyi Sil?</h4>
+                <p class="text-muted">Bu kategoriye bağlı araçlar varsa hata alabilirsiniz. Devam etmek istiyor musunuz?</p>
+                <input type="hidden" id="deleteCategoryId" />
+                <div class="mt-4">
+                    <button type="button" class="btn btn-light px-4 mr-2" data-dismiss="modal" style="border-radius:12px;">Vazgeç</button>
+                    <button type="button" class="btn btn-danger px-4 shadow-sm" id="executeDeleteBtn" onclick="executeDelete()" style="border-radius:12px;">Kategoriyi Sil</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let isSaving = false;
+
+        $(document).ready(function() {
+            loadCategories();
+        });
+
+        function isActuallySuccess(error) {
+            if (!error) return false;
+            if (error instanceof SyntaxError || (error.message && error.message.toLowerCase().includes('json'))) return true;
+            if (error.status && error.status >= 200 && error.status < 300) return true;
+            if (error.response && error.response.status >= 200 && error.response.status < 300) return true;
+            if (typeof error === 'string' && error.toLowerCase().includes('parsererror')) return true;
+            return false;
+        }
+
+        function loadCategories() {
+            ApiService.categories.getAll()
+                .then(data => {
+                    let html = '';
+                    if (!data || data.length === 0) {
+                        html = '<tr><td colspan="3" class="text-center text-muted py-5">Kategori bulunamadı.</td></tr>';
+                    } else {
+                        data.forEach(cat => {
+                            html += `<tr>
+                                <td class="align-middle text-center font-weight-bold text-gray-400">#${cat.id}</td>
+                                <td class="align-middle fw-bold text-dark">${cat.name}</td>
+                                <td class="align-middle text-center">
+                                    <button class="btn btn-info action-btn shadow-sm" onclick="editCategory(${cat.id})" title="Düzenle">
+                                        <i class="fas fa-pen fa-xs"></i>
+                                    </button>
+                                    <button class="btn btn-danger action-btn shadow-sm" onclick="promptDelete(${cat.id})" title="Sil">
+                                        <i class="fas fa-trash fa-xs"></i>
+                                    </button>
+                                </td>
+                            </tr>`;
+                        });
+                    }
+                    $('#categoriesList').html(html);
+                })
+                .catch(error => {
+                    $('#categoriesList').html('<tr><td colspan="3" class="text-center text-danger py-5">Hata oluştu!</td></tr>');
+                });
+        }
+
+        function editCategory(id) {
+            resetFormAlerts();
+            ApiService.categories.getAll()
+                .then(data => {
+                    const category = data.find(c => c.id === id);
+                    if (category) {
+                        $('#categoryId').val(category.id);
+                        $('#categoryName').val(category.name);
+                        $('#formTitle').html('<i class="fas fa-edit mr-2 text-warning"></i> Kategoriyi Düzenle');
+                        $('#saveCategoryBtn').html('<i class="fas fa-sync mr-2"></i> Güncelle');
+                        $('#cancelEditBtn').show();
+                        $('html, body').animate({ scrollTop: 0 }, 'fast');
+                    }
+                });
+        }
+
+        function resetForm() {
+            $('#categoryForm')[0].reset();
+            $('#categoryId').val('');
+            $('#formTitle').html('<i class="fas fa-plus-circle mr-2 text-warning"></i> Yeni Kategori');
+            $('#saveCategoryBtn').html('<i class="fas fa-check-circle mr-2"></i> Kaydet').prop('disabled', false);
+            $('#cancelEditBtn').hide();
+            resetFormAlerts();
+            isSaving = false;
+        }
+
+        function resetFormAlerts() {
+            $('#categoryFormAlert').html('');
+        }
+
+        function saveCategory() {
+            if (isSaving) return;
+            const categoryId = $('#categoryId').val();
+            const categoryName = $('#categoryName').val();
+
+            if (!categoryName || categoryName.trim() === '') {
+                showFormAlert('Lütfen bir isim girin!', 'warning');
+                return;
+            }
+
+            isSaving = true;
+            $('#saveCategoryBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
+
+            const promise = categoryId ?
+                ApiService.categories.update(categoryId, { id: categoryId, name: categoryName }) :
+                ApiService.categories.create({ name: categoryName });
+
+            promise.then(() => handleSuccessAction(categoryId ? 'Güncellendi!' : 'Eklendi!'))
+                   .catch(error => {
+                       if (isActuallySuccess(error)) handleSuccessAction('İşlem Başarılı!');
+                       else {
+                           showFormAlert('Başarısız!', 'danger');
+                           isSaving = false;
+                           $('#saveCategoryBtn').prop('disabled', false).html('Kaydet');
+                       }
+                   });
+        }
+
+        function promptDelete(id) {
+            $('#deleteCategoryId').val(id);
+            $('#deleteConfirmModal').modal('show');
+        }
+
+        function executeDelete() {
+            const id = $('#deleteCategoryId').val();
+            $('#executeDeleteBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
+            ApiService.categories.delete(id)
+                .then(() => handleDeleteSuccess())
+                .catch(error => {
+                    if (isActuallySuccess(error)) handleDeleteSuccess();
+                    else {
+                        $('#deleteConfirmModal').modal('hide');
+                        showPageAlert('Silinemedi (Araç bağlı olabilir).', 'danger');
+                    }
+                });
+        }
+
+        function handleSuccessAction(message) {
+            resetForm();
+            loadCategories();
+            showPageAlert(message, 'success');
+        }
+
+        function handleDeleteSuccess() {
+            $('#deleteConfirmModal').modal('hide');
+            if ($('#categoryId').val() === $('#deleteCategoryId').val()) resetForm();
+            loadCategories();
+            showPageAlert('Kategori silindi!', 'success');
+        }
+
+        function showFormAlert(message, type) {
+            const alert = `<div class="alert alert-${type} border-0 small shadow-sm" style="border-radius:12px;"><i class="fas fa-info-circle mr-2"></i> ${message}</div>`;
+            $('#categoryFormAlert').html(alert);
+        }
+
+        function showPageAlert(message, type) {
+            const alert = `<div class="alert alert-${type} alert-dismissible fade show border-0 shadow-sm" style="border-radius:12px; position:fixed; top:20px; right:20px; z-index:9999;">
+                <i class="fas fa-check-circle mr-2"></i> ${message}
+                <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+            </div>`;
+            $('#pageAlert').html(alert);
+            setTimeout(() => $('#pageAlert .alert').alert('close'), 4000);
+        }
+    </script>
+}

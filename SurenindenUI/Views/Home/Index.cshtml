@@ -1,8 +1,320 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Anasayfa - Sureninden";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<style>
+    :root {
+        --brand-yellow: #FFD700;
+        --brand-dark: #1A1A1A;
+    }
+
+    .hero-section {
+        background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1920&q=80');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        color: white;
+        padding: 160px 0;
+        margin-bottom: 80px;
+        text-align: center;
+        border-radius: 30px;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+        position: relative;
+    }
+
+        .hero-section h1 {
+            font-size: 5rem;
+            font-weight: 900;
+            margin-bottom: 20px;
+            color: white;
+            letter-spacing: -2px;
+            text-transform: uppercase;
+        }
+
+            .hero-section h1 span {
+                color: var(--brand-yellow);
+            }
+
+        .hero-section p {
+            font-size: 1.6rem;
+            margin-bottom: 50px;
+            opacity: 0.9;
+            font-weight: 300;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+    /* Premium Butonlar */
+    .btn-hero-primary {
+        background-color: var(--brand-yellow);
+        color: var(--brand-dark);
+        padding: 18px 45px;
+        font-weight: 800;
+        border-radius: 15px;
+        transition: all 0.4s;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border: none;
+        box-shadow: 0 10px 25px rgba(255, 215, 0, 0.3);
+    }
+
+        .btn-hero-primary:hover {
+            background-color: white;
+            transform: translateY(-5px) scale(1.05);
+        }
+
+    .btn-hero-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        color: white;
+        padding: 18px 45px;
+        font-weight: 700;
+        border-radius: 15px;
+        transition: all 0.4s;
+        border: 1px solid rgba(255,255,255,0.3);
+        text-transform: uppercase;
+    }
+
+        .btn-hero-secondary:hover {
+            background: white;
+            color: var(--brand-dark);
+            transform: translateY(-5px);
+        }
+
+    /* Featured Cars Başlık */
+    .section-title {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 60px;
+        text-align: center;
+        color: var(--brand-dark);
+    }
+
+        .section-title span {
+            color: var(--brand-yellow);
+            display: block;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            margin-bottom: 10px;
+        }
+
+    /* Premium Kartlar */
+    .car-card {
+        background: white;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        transition: all 0.4s ease;
+        border: 1px solid rgba(0,0,0,0.03);
+    }
+
+        .car-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.12);
+        }
+
+    .car-img-container {
+        position: relative;
+        height: 250px;
+    }
+
+    .car-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .price-badge {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: var(--brand-dark);
+        color: var(--brand-yellow);
+        padding: 10px 20px;
+        border-radius: 12px;
+        font-weight: 800;
+        font-size: 1.2rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    .car-card-body {
+        padding: 30px;
+    }
+
+    .car-card-title {
+        font-weight: 800;
+        font-size: 1.4rem;
+        margin-bottom: 15px;
+        color: var(--brand-dark);
+    }
+
+    .spec-item {
+        background: #f8f9fa;
+        padding: 10px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #666;
+        flex: 1;
+        text-align: center;
+    }
+
+        .spec-item i {
+            display: block;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+            color: var(--brand-yellow);
+        }
+
+    /* Feature Boxes */
+    .feature-box {
+        text-align: center;
+        padding: 50px 30px;
+        background: white;
+        border-radius: 24px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.02);
+        transition: all 0.4s;
+    }
+
+        .feature-box:hover {
+            background: var(--brand-dark);
+            color: white;
+            transform: translateY(-10px);
+        }
+
+    .feature-icon-circle {
+        width: 90px;
+        height: 90px;
+        background: rgba(255, 215, 0, 0.1);
+        color: var(--brand-yellow);
+        font-size: 2.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 20px;
+        margin: 0 auto 30px;
+        transform: rotate(45deg);
+    }
+
+        .feature-icon-circle i {
+            transform: rotate(-45deg);
+        }
+</style>
+
+<div class="container-fluid px-4 mt-4">
+    <div class="hero-section">
+        <div class="container">
+            <span>PREMIUM RENTAL</span>
+            <h1 class="display-3">SUREN<span>İNDEN</span></h1>
+            <p>Direksiyonun Başında Siz Olun. Lüks Filomuzla Benzersiz Bir Sürüş Deneyimine Hazırlanın.</p>
+
+            <div class="cta-buttons d-flex gap-3 justify-content-center flex-wrap" id="heroButtons">
+                <div class="spinner-border text-warning" role="status"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="featured-cars">
+            <h2 class="section-title"><span>ÖZEL SEÇKİ</span>Öne Çıkan Filomuz</h2>
+            <div class="row g-4" id="featuredCarsList">
+                <div class="col-12 text-center text-muted py-5">
+                    <i class="fas fa-circle-notch fa-spin fa-3x mb-3 text-warning"></i>
+                    <p class="fw-medium">Lüks araçlarımız yükleniyor...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-5 pt-5 mb-5 g-4">
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <div class="feature-icon-circle"><i class="fas fa-gem"></i></div>
+                    <h4 class="fw-bold">VIP Hizmet</h4>
+                    <p class="opacity-75">Her kiralamada size özel hizmet ve tertemiz teslimat garantisi sunuyoruz.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <div class="feature-icon-circle"><i class="fas fa-key"></i></div>
+                    <h4 class="fw-bold">Temassız Teslim</h4>
+                    <p class="opacity-75">Tüm işlemlerinizi online tamamlayın, anahtarınızı anında teslim alın.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <div class="feature-icon-circle"><i class="fas fa-headset"></i></div>
+                    <h4 class="fw-bold">7/24 Destek</h4>
+                    <p class="opacity-75">Yolculuğunuzun her anında uzman ekibimizle yanınızdayız.</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            checkUserStatus();
+            loadFeaturedCars();
+        });
+
+        function checkUserStatus() {
+            const stored = localStorage.getItem('authUser');
+            const heroButtons = $('#heroButtons');
+
+            if (stored) {
+                heroButtons.html(`
+                    <a href="/home/cars" class="btn btn-hero-primary">Filoyu Görüntüle</a>
+                    <a href="/profile" class="btn btn-hero-secondary">Hesabım</a>
+                `);
+            } else {
+                heroButtons.html(`
+                    <a href="/home/cars" class="btn btn-hero-primary">Araçları Keşfet</a>
+                    <a href="/auth/login" class="btn btn-hero-secondary">Oturum Aç</a>
+                `);
+            }
+        }
+
+        function loadFeaturedCars() {
+            ApiService.cars.getAvailable()
+                .then(data => {
+                    const featured = data.slice(0, 6);
+                    if (!featured || featured.length === 0) {
+                        $('#featuredCarsList').html('<div class="col-12 text-center py-5"><p>Şu anda vitrin için müsait araç bulunmuyor.</p></div>');
+                        return;
+                    }
+
+                    let html = '';
+                    featured.forEach(car => {
+                        const defaultImg = '/images/car-default.jpg';
+                        const fullImagePath = car.imagePath ? `https://localhost:7008${car.imagePath}` : defaultImg;
+
+                        html += `
+                            <div class="col-md-6 col-lg-4">
+                                <div class="car-card">
+                                    <div class="car-img-container">
+                                        <img src="${fullImagePath}" onerror="this.src='${defaultImg}'">
+                                        <div class="price-badge">₺${car.dailyPrice.toLocaleString('tr-TR')}</div>
+                                    </div>
+                                    <div class="car-card-body">
+                                        <div class="car-card-title">${car.brand} ${car.model}</div>
+                                        <div class="d-flex gap-2 mb-4 text-center">
+                                            <div class="spec-item"><i class="fas fa-calendar-check"></i>${car.year}</div>
+                                            <div class="spec-item"><i class="fas fa-gas-pump"></i>${car.fuelType}</div>
+                                            <div class="spec-item"><i class="fas fa-cogs"></i>${car.transmission}</div>
+                                        </div>
+                                        <a href="/home/cars" class="btn btn-dark w-100 fw-bold py-3" style="border-radius:15px; background:#111;">
+                                            REZERVASYON YAP
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    $('#featuredCarsList').html(html);
+                });
+        }
+    </script>
+}
