@@ -197,7 +197,6 @@
                     const actionHtml = !isReturned ?
                         `<button class="btn btn-return-action shadow-sm" onclick="event.stopPropagation(); completeRental(${rental.id}, ${rental.totalPrice})">Teslim Al</button>` :
                         '<i class="fas fa-check-double text-success opacity-50"></i>';
-
                     html += `
                         <tr style="cursor:pointer" onclick="showRentalDetail(${rental.id})">
                             <td>

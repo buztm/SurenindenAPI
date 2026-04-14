@@ -276,47 +276,72 @@
             if (userId) loadRentals(userId);
         }
 
-        function loadRentals(userId) {
-            ApiService.rentals.getMyRentals(userId)
-                .then(data => {
-                    let total = 0, active = 0, completed = 0, spent = 0;
+                async function loadRentals(userId) {
+            try {
+                // 1. Hem kiralamaları hem de tüm araçları aynı anda çekiyoruz
+                const [rentals, cars] = await Promise.all([
+                    ApiService.rentals.getMyRentals(userId),
+                    ApiService.cars.getAll()
+                ]);
 
-                    if (!data || data.length === 0) {
-                        $('#rentalHistory').html('<div class="text-center py-5"><i class="fas fa-car-slash fa-3x mb-3 opacity-25"></i><p class="text-muted">Henüz kiralama kaydınız bulunmuyor.</p></div>');
-                        return;
-                    }
+                let total = 0, active = 0, completed = 0, spent = 0;
 
-                    let html = `<div class="table-responsive"><table class="table rental-table table-hover align-middle mb-0"><thead><tr><th class="ps-4">Araç</th><th>Tarih</th><th>Tutar</th><th class="text-center">Durum</th></tr></thead><tbody>`;
+                if (!rentals || rentals.length === 0) {
+                    $('#rentalHistory').html('<div class="text-center py-5"><i class="fas fa-car-slash fa-3x mb-3 opacity-25"></i><p class="text-muted">Henüz kiralama kaydınız bulunmuyor.</p></div>');
+                    return;
+                }
 
-                    data.forEach(r => {
-                        total++; spent += (r.totalPrice || 0);
-                        const isReturned = r.returnDate && new Date(r.returnDate).getFullYear() > 2000;
-                        if (!isReturned) active++; else completed++;
+                let html = `<div class="table-responsive">
+                                <table class="table rental-table table-hover align-middle mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th class="ps-4">Araç</th>
+                                            <th>Tarih</th>
+                                            <th>Tutar</th>
+                                            <th class="text-center">Durum</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>`;
 
-                        const badge = isReturned ?
-                            '<span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2 rounded-pill">Tamamlandı</span>' :
-                            '<span class="badge bg-warning bg-opacity-10 text-dark border border-warning border-opacity-25 px-3 py-2 rounded-pill">Müşteride</span>';
+                rentals.forEach(r => {
+                    total++;
+                    spent += (r.totalPrice || 0);
 
-                        html += `<tr>
-                            <td class="ps-4">
-                                <div class="fw-bold text-dark">Araç #${r.carId}</div>
-                                <small class="text-muted">İşlem: ${r.id}</small>
-                            </td>
-                            <td class="small">
-                                <div><b>B:</b> ${new Date(r.rentDate).toLocaleDateString('tr-TR')}</div>
-                                <div><b>İ:</b> ${isReturned ? new Date(r.returnDate).toLocaleDateString('tr-TR') : '--'}</div>
-                            </td>
-                            <td class="fw-bold text-dark">₺${(r.totalPrice || 0).toLocaleString('tr-TR')}</td>
-                            <td class="text-center">${badge}</td>
-                        </tr>`;
-                    });
+                    // Araç listesinden ilgili aracı buluyoruz
+                    const carInfo = cars.find(c => c.id === r.carId);
+                    const carDisplay = carInfo ? `${carInfo.brand} ${carInfo.model}` : `Araç #${r.carId}`;
 
-                    $('#rentalHistory').html(html + '</tbody></table></div>');
-                    $('#totalRentals').text(total);
-                    $('#activeRentals').text(active);
-                    $('#completedRentals').text(completed);
-                    $('#totalSpent').text('₺' + spent.toLocaleString('tr-TR'));
+                    const isReturned = r.returnDate && new Date(r.returnDate).getFullYear() > 2000;
+                    if (!isReturned) active++; else completed++;
+
+                    const badge = isReturned ?
+                        '<span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2 rounded-pill">Tamamlandı</span>' :
+                        '<span class="badge bg-warning bg-opacity-10 text-dark border border-warning border-opacity-25 px-3 py-2 rounded-pill">Müşteride</span>';
+
+                    html += `<tr>
+                        <td class="ps-4">
+                            <div class="fw-bold text-dark">${carDisplay}</div>
+                            <small class="text-muted">İşlem: ${r.id}</small>
+                        </td>
+                        <td class="small">
+                            <div><b>B:</b> ${new Date(r.rentDate).toLocaleDateString('tr-TR')}</div>
+                            <div><b>İ:</b> ${isReturned ? new Date(r.returnDate).toLocaleDateString('tr-TR') : '--'}</div>
+                        </td>
+                        <td class="fw-bold text-dark">₺${(r.totalPrice || 0).toLocaleString('tr-TR')}</td>
+                        <td class="text-center">${badge}</td>
+                    </tr>`;
                 });
+
+                $('#rentalHistory').html(html + '</tbody></table></div>');
+                $('#totalRentals').text(total);
+                $('#activeRentals').text(active);
+                $('#completedRentals').text(completed);
+                $('#totalSpent').text('₺' + spent.toLocaleString('tr-TR'));
+
+            } catch (error) {
+                console.error("Veri yükleme hatası:", error);
+                $('#rentalHistory').html('<div class="text-danger p-4">Veriler yüklenirken bir hata oluştu.</div>');
+            }
         }
 
         function saveProfile() {
